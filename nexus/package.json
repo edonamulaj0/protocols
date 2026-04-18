@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:fresh": "rm -rf node_modules/.vite && vite --force",
     "build": "vite build",
     "lint": "eslint .",
     "lockfile:pages": "npx -y npm@10.9.2 install",

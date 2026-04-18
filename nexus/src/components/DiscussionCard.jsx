@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
 import { CivilityBadge } from './CivilityBadge'
@@ -30,7 +30,11 @@ function formatScore(n) {
 export function DiscussionCard({ post }) {
   const [stance, setStance] = useState(null)
   const dist = post.stanceDistribution || { for: 33, against: 34, neutral: 33 }
-  const liked = useUserStore((s) => (s.likedDiscussionIds ?? []).includes(post.id))
+  const likedIds = useUserStore((s) => s.likedDiscussionIds)
+  const liked = useMemo(
+    () => (Array.isArray(likedIds) ? likedIds : []).includes(post.id),
+    [likedIds, post.id],
+  )
   const toggleLike = useUserStore((s) => s.toggleDiscussionLike)
 
   return (

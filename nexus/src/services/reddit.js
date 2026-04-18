@@ -97,9 +97,10 @@ export function normalizePost(child, subreddit) {
 }
 
 function guessCategory(sub) {
-  const s = sub.toLowerCase()
+  const s = String(sub).toLowerCase()
   if (s.includes('politics') || s.includes('worldnews')) return 'Politics'
-  if (s.includes('technology') || s.includes('science')) return 'Tech'
+  if (s.includes('technology')) return 'Tech'
+  if (s.includes('science')) return 'Science'
   if (s.includes('askreddit')) return 'Society'
   return 'Society'
 }

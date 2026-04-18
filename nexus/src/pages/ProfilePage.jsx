@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useShallow } from 'zustand/react/shallow'
 import { useUserStore } from '../stores/userStore'
 
 function toIsoLocalDate(d) {
@@ -93,9 +92,23 @@ export function ProfilePage() {
   const setBirthDate = useUserStore((s) => s.setBirthDate)
   const commentHistory = useUserStore((s) => s.commentHistory)
   const joinedDiscussionIds = useUserStore((s) => s.joinedDiscussionIds)
-  const stats = useUserStore((s) => ({ ...defaultStats, ...s.stats }))
-  const activityFeed = useUserStore((s) => s.activityFeed || [])
-  const categoryEngagement = useUserStore(useShallow((s) => s.categoryEngagement()))
+  const statsRaw = useUserStore((s) => s.stats)
+  const stats = useMemo(() => ({ ...defaultStats, ...statsRaw }), [statsRaw])
+  const activityFeedRaw = useUserStore((s) => s.activityFeed)
+  const activityFeed = useMemo(
+    () => (Array.isArray(activityFeedRaw) ? activityFeedRaw : []),
+    [activityFeedRaw],
+  )
+  const categoryEngagement = useMemo(() => {
+    const cats = ['Politics', 'Tech', 'Society', 'Science', 'Culture']
+    const counts = Object.fromEntries(cats.map((c) => [c, 0]))
+    for (const h of commentHistory) {
+      const c = h.category
+      if (counts[c] !== undefined) counts[c]++
+      else counts.Society++
+    }
+    return counts
+  }, [commentHistory])
 
   const isMeRoute = routeName === 'me'
   const displayName =

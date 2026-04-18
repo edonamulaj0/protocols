@@ -73,11 +73,7 @@ export function AppLayout() {
 
       <MobileBottomNav />
 
-      <MenuPanel
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        onNewDiscussion={() => setModalOpen(true)}
-      />
+      <MenuPanel open={menuOpen} onClose={() => setMenuOpen(false)} />
       <NotificationsPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
       <NewDiscussionModal
         open={modalOpen}

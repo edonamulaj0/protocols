@@ -16,7 +16,7 @@ export function AppNavbar({ onOpenNotifications, onOpenMenu, onNewDiscussion }) 
           <motion.button
             type="button"
             onClick={onNewDiscussion}
-            className="accent-glow-hover hidden rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--navy-950)] sm:inline-flex"
+            className="accent-glow-hover inline-flex rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--navy-950)]"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >

@@ -1,10 +1,19 @@
+import { useMemo, useState } from 'react'
 import { useFeedStore } from '../stores/feedStore'
 import { InfiniteScrollFeed } from '../components/InfiniteScrollFeed'
 import { SkeletonCard } from '../components/SkeletonCard'
+import { FeedSortControls } from '../components/FeedSortControls'
+import { orderPostsForDisplay } from '../lib/feedOrdering'
 
 export function HomePage() {
   const loading = useFeedStore((s) => s.loading)
   const posts = useFeedStore((s) => s.posts)
+  const [sort, setSort] = useState('relevance')
+
+  const displayPosts = useMemo(
+    () => orderPostsForDisplay(posts, sort, posts),
+    [posts, sort],
+  )
 
   if (loading && !posts.length) {
     return (
@@ -25,14 +34,15 @@ export function HomePage() {
 
   return (
     <div>
-      <header className="mb-8">
+      <header className="mb-6">
         <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Today&apos;s debates</h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
           Substack-style cards on a calmer canvas. Data may fall back to curated mocks when APIs
           block the browser.
         </p>
       </header>
-      <InfiniteScrollFeed posts={posts} />
+      <FeedSortControls value={sort} onChange={setSort} className="mb-6" />
+      <InfiniteScrollFeed posts={displayPosts} />
     </div>
   )
 }

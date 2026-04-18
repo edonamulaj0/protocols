@@ -64,63 +64,76 @@ export const useFeedStore = create((set, get) => ({
 
   bootstrap: async () => {
     set({ loading: true, error: null })
+    const mockPosts = () => MOCK_DISCUSSIONS.map((p) => ({ ...p, sources: [...p.sources] }))
 
-    const curated = await loadCuratedDiscussions()
-    if (curated?.length) {
-      set({
-        posts: curated,
-        loading: false,
-        hasMore: false,
-        afterBySub: {},
-        lastRefresh: Date.now(),
-        headlines: [],
-      })
-      get()._clearRefresh()
-      return
-    }
-
-    const headlines = await loadHeadlinesOnce()
-    set({ headlines })
-    let posts = []
     try {
-      posts = await fetchInitialMultiSub({ perSub: 6 })
+      const curated = await loadCuratedDiscussions()
+      if (curated?.length) {
+        set({
+          posts: curated,
+          loading: false,
+          hasMore: false,
+          afterBySub: {},
+          lastRefresh: Date.now(),
+          headlines: [],
+        })
+        get()._clearRefresh()
+        return
+      }
+
+      const headlines = await loadHeadlinesOnce()
+      set({ headlines })
+      let posts = []
+      try {
+        posts = await fetchInitialMultiSub({ perSub: 6 })
+      } catch (e) {
+        set({ error: String(e?.message || e) })
+      }
+      if (!posts.length) {
+        set({
+          posts: mockPosts(),
+          loading: false,
+          hasMore: false,
+          lastRefresh: Date.now(),
+        })
+      } else {
+        set({
+          posts,
+          loading: false,
+          hasMore: true,
+          afterBySub: {},
+          lastRefresh: Date.now(),
+        })
+      }
+
+      get()._clearRefresh()
+      refreshTimer = window.setInterval(() => {
+        get().refreshTrending()
+      }, 10 * 60 * 1000)
+
+      const top = get()
+        .posts.slice(0, 5)
+        .filter((p) => p.source === 'reddit' && p.redditId)
+      await Promise.all(
+        top.map((p) =>
+          enrichDiscussion(p, headlines).catch(() => {
+            /* keep partial */
+          }),
+        ),
+      )
+      set({ posts: [...get().posts], lastRefresh: Date.now() })
     } catch (e) {
-      set({ error: String(e.message || e) })
+      set({ error: String(e?.message || e) })
+      if (!get().posts.length) {
+        set({
+          posts: mockPosts(),
+          hasMore: false,
+          lastRefresh: Date.now(),
+        })
+      }
+    } finally {
+      set({ loading: false })
     }
-    if (!posts.length) {
-      set({
-        posts: MOCK_DISCUSSIONS.map((p) => ({ ...p, sources: [...p.sources] })),
-        loading: false,
-        hasMore: false,
-        lastRefresh: Date.now(),
-      })
-    } else {
-      set({
-        posts,
-        loading: false,
-        hasMore: true,
-        afterBySub: {},
-        lastRefresh: Date.now(),
-      })
-    }
-
-    get()._clearRefresh()
-    refreshTimer = window.setInterval(() => {
-      get().refreshTrending()
-    }, 10 * 60 * 1000)
-
-    const top = get()
-      .posts.slice(0, 5)
-      .filter((p) => p.source === 'reddit' && p.redditId)
-    await Promise.all(
-      top.map((p) =>
-        enrichDiscussion(p, headlines).catch(() => {
-          /* keep partial */
-        }),
-      ),
-    )
-    // Bump lastRefresh so discussion pages re-hydrate from enriched posts (in-place mutations).
-    set({ posts: [...get().posts], lastRefresh: Date.now() })
   },
 
   _clearRefresh: () => {
@@ -161,7 +174,7 @@ export const useFeedStore = create((set, get) => ({
         limit: 10,
         after,
       })
-      const mapped = children.map((ch) => normalizePost(ch, sub)).filter(Boolean)
+      const mapped = (children ?? []).map((ch) => normalizePost(ch, sub)).filter(Boolean)
       const ids = new Set(get().posts.map((p) => p.id))
       const appended = mapped.filter((p) => p && !ids.has(p.id))
       set({
