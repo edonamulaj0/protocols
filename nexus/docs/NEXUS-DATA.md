@@ -31,6 +31,26 @@ export default {
 
 Add a Cron Trigger in the Wrangler dashboard (e.g. `0 7 * * *` for 07:00 UTC).
 
+## Cloudflare Pages
+
+This app is a **static Vite build** (`npm run build` → `dist/`). Pages runs **`npm ci`** then your build command, so **`package-lock.json` must be committed** and kept in sync with `package.json` (run `npm install` locally after dependency changes, then commit the lockfile).
+
+**Project settings (Workers & Pages → your project → Settings → Builds & deployments):**
+
+| Setting | Value |
+|--------|--------|
+| Root directory (path) | `nexus` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+
+Optional: set **Environment variables** for the **Production** and **Preview** build environments with any `VITE_*` values you need (e.g. `VITE_GOOGLE_CLIENT_ID`). Vite inlines them at build time.
+
+**Google OAuth:** add your Pages URL to the OAuth client **Authorized JavaScript origins**, e.g. `https://<project>.pages.dev` and your custom domain.
+
+**SPA routing:** `public/_redirects` is copied into `dist` so deep links like `/discussion/123` resolve to `index.html` with HTTP 200.
+
+**Node version:** `nexus/.node-version` is set to `22` to align with common CI images; override in Pages with `NODE_VERSION` if needed.
+
 ## Environment variables
 
 Copy `.env.example` to `.env` and set:
