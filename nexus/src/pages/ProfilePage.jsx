@@ -10,6 +10,16 @@ function toIsoLocalDate(d) {
   return `${y}-${m}-${day}`
 }
 
+/** @param {string} iso `YYYY-MM-DD` */
+function formatBirthdayLong(iso) {
+  if (!iso || typeof iso !== 'string') return null
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim())
+  if (!m) return null
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  if (Number.isNaN(d.getTime())) return null
+  return d.toLocaleDateString(undefined, { dateStyle: 'long' })
+}
+
 function stancePill(stance) {
   if (stance === 'For') return 'text-[var(--for)] ring-emerald-500/35'
   if (stance === 'Against') return 'text-[var(--against)] ring-rose-500/35'
@@ -27,9 +37,9 @@ function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
   const [dobEdit, setDobEdit] = useState(birthDate || '')
   return (
     <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-      <h2 className="font-heading text-sm font-semibold text-[var(--text)]">Birthday on this device</h2>
+      <h2 className="font-heading text-sm font-semibold text-[var(--text)]">Update birthday</h2>
       <p className="mt-1 text-xs text-[var(--muted)]">
-        Used for age checks and your profile. Kept when you sign out of Google. Clear site data in your browser to remove it.
+        Stored only on this device. Kept when you sign out of Google until you clear site data.
       </p>
       <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1">
@@ -56,17 +66,27 @@ function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
   )
 }
 
+function ProfileField({ label, children }) {
+  return (
+    <div className="border-b border-[var(--border)] py-3 last:border-0">
+      <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">{label}</dt>
+      <dd className="mt-1 text-sm text-[var(--text)]">{children}</dd>
+    </div>
+  )
+}
+
 export function ProfilePage() {
   const { username: routeName } = useParams()
-  const [persistHydrated, setPersistHydrated] = useState(() => useUserStore.persist.hasHydrated())
+  const [userPersistReady, setUserPersistReady] = useState(() => useUserStore.persist.hasHydrated())
 
   useEffect(() => {
-    if (persistHydrated) return undefined
-    return useUserStore.persist.onFinishHydration(() => setPersistHydrated(true))
-  }, [persistHydrated])
+    if (userPersistReady) return undefined
+    return useUserStore.persist.onFinishHydration(() => setUserPersistReady(true))
+  }, [userPersistReady])
 
   const selfName = useUserStore((s) => s.name)
   const selfEmail = useUserStore((s) => s.email)
+  const googleSub = useUserStore((s) => s.googleSub)
   const birthDate = useUserStore((s) => s.birthDate)
   const profileAge = useUserStore((s) => s.getProfileAge())
   const setBirthDate = useUserStore((s) => s.setBirthDate)
@@ -76,8 +96,11 @@ export function ProfilePage() {
   const activityFeed = useUserStore((s) => s.activityFeed || [])
   const categoryEngagement = useUserStore((s) => s.categoryEngagement())
 
-  const displayName = routeName === 'me' ? selfName?.trim() || 'Signed-out' : routeName
-  const isOwn = routeName === 'me' || (!!selfName && routeName === selfName)
+  const isMeRoute = routeName === 'me'
+  const displayName =
+    isMeRoute ? (selfName?.trim() || (googleSub ? 'Member' : 'Your profile')) : routeName
+  const isOwn = isMeRoute || (!!selfName && routeName === selfName)
+  const birthdayLabel = formatBirthdayLong(birthDate)
 
   const cats = ['Politics', 'Tech', 'Society', 'Science', 'Culture']
   const maxCat = Math.max(1, ...cats.map((c) => (isOwn ? categoryEngagement[c] : 0) || 0))
@@ -100,7 +123,7 @@ export function ProfilePage() {
     { label: 'Discussions joined', value: isOwn ? joinedDiscussionIds.length : 0 },
   ]
 
-  if (routeName === 'me' && !persistHydrated) {
+  if (isMeRoute && !userPersistReady) {
     return (
       <div>
         <p className="text-sm text-[var(--muted)]">Loading profile…</p>
@@ -111,27 +134,54 @@ export function ProfilePage() {
   return (
     <div>
       <header className="border-b border-[var(--border)] pb-8">
-        <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">{displayName}</h1>
-        {isOwn && (selfEmail || profileAge != null || birthDate) && (
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            {selfEmail ? <span className="text-[var(--text)]">{selfEmail}</span> : null}
-            {selfEmail && profileAge != null ? ' · ' : null}
-            {profileAge != null && (
-              <>
-                Age <span className="text-[var(--text)]">{profileAge}</span>
-                {birthDate ? ' (from your saved birthday)' : ''}
-              </>
-            )}
-            {(selfEmail || profileAge != null) && <span> · stored on this device only</span>}
-          </p>
-        )}
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+          {isMeRoute ? 'Your account' : 'Profile'}
+        </p>
+        <h1 className="mt-1 font-heading text-3xl font-semibold text-[var(--text)]">{displayName}</h1>
         {!isOwn && (
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Profiles are device-local in this MVP—URLs other than <code className="text-[var(--text)]">/profile/me</code> show an empty public
-            shell.
+            Device-local MVP—only <Link to="/profile/me" className="text-[var(--navy-400)] hover:underline">/profile/me</Link> shows your data.
           </p>
         )}
       </header>
+
+      {isOwn && (
+        <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2">
+          <h2 className="border-b border-[var(--border)] py-3 font-heading text-sm font-semibold text-[var(--text)]">
+            Name & birthday
+          </h2>
+          <dl>
+            <ProfileField label="Name">{selfName?.trim() || '—'}</ProfileField>
+            <ProfileField label="Email">{selfEmail?.trim() || '—'}</ProfileField>
+            <ProfileField label="Birthday">{birthdayLabel || '—'}</ProfileField>
+            <ProfileField label="Age (from birthday)">
+              {profileAge != null ? profileAge : '—'}
+            </ProfileField>
+          </dl>
+        </section>
+      )}
+
+      {isOwn && (
+        <section className="mt-8">
+          <h2 className="font-heading text-lg font-semibold text-[var(--text)]">Activity history</h2>
+          <p className="mt-1 text-xs text-[var(--muted)]">Posts, likes, comments, and votes (newest first).</p>
+          <ul className="mt-4 space-y-2">
+            {activityFeed.length === 0 && (
+              <li className="text-sm text-[var(--muted)]">No activity yet.</li>
+            )}
+            {activityFeed.map((a) => (
+              <li
+                key={a.id}
+                className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-sm"
+              >
+                <span className="font-medium capitalize text-[var(--navy-400)]">{a.type}</span>
+                <span className="min-w-0 flex-1 text-[var(--text)]">{a.title || '—'}</span>
+                <span className="text-xs text-[var(--muted)]">{new Date(a.at).toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {isOwn && (
         <ProfileBirthdayEditor
@@ -145,7 +195,7 @@ export function ProfilePage() {
 
       {isOwn && (
         <section className="mt-8">
-          <h2 className="font-heading text-lg font-semibold text-[var(--text)]">Activity</h2>
+          <h2 className="font-heading text-lg font-semibold text-[var(--text)]">Stats</h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {statTiles.map((t) => (
               <div
@@ -186,30 +236,6 @@ export function ProfilePage() {
               </div>
             ))}
           </div>
-        </section>
-      )}
-
-      {isOwn && (
-        <section className="mt-10">
-          <h2 className="font-heading text-lg font-semibold text-[var(--text)]">Activity history</h2>
-          <p className="mt-1 text-xs text-[var(--muted)]">Posts, likes, comments, and votes (newest first).</p>
-          <ul className="mt-4 space-y-2">
-            {activityFeed.length === 0 && (
-              <li className="text-sm text-[var(--muted)]">No activity yet.</li>
-            )}
-            {activityFeed.map((a) => (
-              <li
-                key={a.id}
-                className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-sm"
-              >
-                <span className="font-medium capitalize text-[var(--navy-400)]">{a.type}</span>
-                <span className="min-w-0 flex-1 text-[var(--text)]">{a.title || '—'}</span>
-                <span className="text-xs text-[var(--muted)]">
-                  {new Date(a.at).toLocaleString()}
-                </span>
-              </li>
-            ))}
-          </ul>
         </section>
       )}
 

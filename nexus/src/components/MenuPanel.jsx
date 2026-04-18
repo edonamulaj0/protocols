@@ -3,6 +3,7 @@ import { HiOutlineX } from 'react-icons/hi'
 import { IoHomeOutline, IoCompassOutline, IoPersonOutline, IoInformationCircleOutline } from 'react-icons/io5'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useScrollLock } from '../hooks/useScrollLock'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useUserStore } from '../stores/userStore'
 
 const navClass =
@@ -15,13 +16,14 @@ export function MenuPanel({ open, onClose, onNewDiscussion }) {
   const navigate = useNavigate()
   const googleSub = useUserStore((s) => s.googleSub)
   const signOut = useUserStore((s) => s.signOut)
-  useScrollLock(open)
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  useScrollLock(open && !isDesktop)
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[110] flex flex-col bg-[var(--navy-950)]"
+          className="fixed inset-0 z-[110] flex flex-col bg-[var(--navy-950)] lg:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -119,7 +119,8 @@ export const useFeedStore = create((set, get) => ({
         }),
       ),
     )
-    set({ posts: [...get().posts] })
+    // Bump lastRefresh so discussion pages re-hydrate from enriched posts (in-place mutations).
+    set({ posts: [...get().posts], lastRefresh: Date.now() })
   },
 
   _clearRefresh: () => {

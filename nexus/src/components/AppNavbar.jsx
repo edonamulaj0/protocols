@@ -7,10 +7,12 @@ export function AppNavbar({ onOpenNotifications, onOpenMenu, onNewDiscussion }) 
   const unread = useNotificationStore((s) => s.unreadCount)
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-[60] border-b border-[var(--border)] bg-[var(--navy-950)]/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
-        <LogoMark />
-        <div className="flex flex-1 justify-end items-center gap-2">
+    <header className="fixed left-0 right-0 top-0 z-[60] border-b border-[var(--border)] bg-[var(--navy-950)]/85 backdrop-blur-md lg:left-56">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:max-w-none lg:px-6">
+        <div className="lg:hidden">
+          <LogoMark />
+        </div>
+        <div className="flex flex-1 items-center justify-end gap-2 lg:w-full">
           <motion.button
             type="button"
             onClick={onNewDiscussion}
@@ -37,7 +39,7 @@ export function AppNavbar({ onOpenNotifications, onOpenMenu, onNewDiscussion }) 
           <motion.button
             type="button"
             onClick={onOpenMenu}
-            className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--text)] transition-colors hover:bg-[var(--navy-900)]"
+            className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--text)] transition-colors hover:bg-[var(--navy-900)] lg:hidden"
             aria-label="Open menu"
             whileTap={{ scale: 0.95 }}
           >

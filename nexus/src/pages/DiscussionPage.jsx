@@ -36,6 +36,7 @@ function DiscussionPageInner({ id, preferredStance }) {
   const sortedComments = useDiscussionStore((s) => s.sortedComments)
   const feedLoading = useFeedStore((s) => s.loading)
   const feedPosts = useFeedStore((s) => s.posts)
+  const feedLastRefresh = useFeedStore((s) => s.lastRefresh)
 
   const displayName = useUserStore((s) => s.name)
   const canComment = useUserStore((s) => {
@@ -58,7 +59,7 @@ function DiscussionPageInner({ id, preferredStance }) {
   useEffect(() => {
     if (!id) return
     hydrateFromFeed(id)
-  }, [id, hydrateFromFeed, feedPosts, feedLoading])
+  }, [id, hydrateFromFeed, feedPosts, feedLoading, feedLastRefresh])
 
   const post = detail?.post
   const comments = id ? sortedComments(id) : []

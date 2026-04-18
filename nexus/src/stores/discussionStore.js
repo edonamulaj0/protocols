@@ -36,17 +36,23 @@ export const useDiscussionStore = create((set, get) => ({
       feed.find((p) => p.id === decodeURIComponent(id)) ||
       MOCK_DISCUSSIONS.find((p) => p.id === id)
     if (!post) return null
+    const existing = get().detailById[post.id]
     const saved = loadThread(post.id)
-    const baseComments = saved || seedComments()
+    const keepComments =
+      existing?.post?.id === post.id && Array.isArray(existing.comments) && existing.comments.length
+        ? existing.comments
+        : null
+    const baseComments = keepComments ?? saved ?? seedComments()
+    const sort = existing?.sort && existing.post?.id === post.id ? existing.sort : 'top'
     set({
       currentId: post.id,
-      tab: 'sides',
+      tab: existing?.post?.id === post.id ? get().tab : 'sides',
       detailById: {
         ...get().detailById,
         [post.id]: {
           post,
           comments: baseComments,
-          sort: 'top',
+          sort,
         },
       },
     })

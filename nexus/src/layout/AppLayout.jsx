@@ -2,11 +2,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { AppNavbar } from '../components/AppNavbar'
+import { DesktopSidebar } from '../components/DesktopSidebar'
 import { MenuPanel } from '../components/MenuPanel'
 import { MobileBottomNav } from '../components/MobileBottomNav'
 import { NewDiscussionModal } from '../components/NewDiscussionModal'
 import { NotificationsPanel } from '../components/NotificationsPanel'
 import { TrendingPanel } from '../components/TrendingPanel'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useFeedStore } from '../stores/feedStore'
 import { useNotificationStore } from '../stores/notificationStore'
 import { useUserStore } from '../stores/userStore'
@@ -20,15 +22,22 @@ export function AppLayout() {
   const prependLocalDiscussion = useFeedStore((s) => s.prependLocalDiscussion)
   const recordPostCreated = useUserStore((s) => s.recordPostCreated)
   const initNotifications = useNotificationStore((s) => s.init)
+  const isDesktopNav = useMediaQuery('(min-width: 1024px)')
 
   useEffect(() => {
     initNotifications()
   }, [initNotifications])
 
-  const anyOverlay = notifOpen || menuOpen
+  useEffect(() => {
+    if (!isDesktopNav || !menuOpen) return
+    queueMicrotask(() => setMenuOpen(false))
+  }, [isDesktopNav, menuOpen])
+
+  const anyOverlay = notifOpen || (menuOpen && !isDesktopNav)
 
   return (
     <div className="flex min-h-svh flex-col pt-14">
+      <DesktopSidebar onNewDiscussion={() => setModalOpen(true)} />
       <AppNavbar
         onOpenNotifications={() => {
           setMenuOpen(false)
@@ -41,11 +50,11 @@ export function AppLayout() {
         onNewDiscussion={() => setModalOpen(true)}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col lg:flex-row">
+      <div className="flex min-w-0 flex-1 flex-col lg:flex-row lg:pl-56">
         <AnimatePresence mode="wait">
           <motion.main
             key={location.pathname}
-            className={`mx-auto w-full max-w-[640px] flex-1 px-4 py-6 lg:px-6 ${anyOverlay ? '' : 'pb-20'} lg:pb-10`}
+            className={`mx-auto w-full max-w-[min(40rem,100%)] flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-20'} lg:pb-10`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
