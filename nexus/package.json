@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "lockfile:pages": "npx -y npm@10.9.2 install",
     "preview": "vite preview",
     "fetch-discussions": "tsx --tsconfig tsconfig.scripts.json scripts/fetchDiscussions.ts"
   },

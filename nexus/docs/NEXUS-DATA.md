@@ -33,7 +33,13 @@ Add a Cron Trigger in the Wrangler dashboard (e.g. `0 7 * * *` for 07:00 UTC).
 
 ## Cloudflare Pages
 
-This app is a **static Vite build** (`npm run build` → `dist/`). Pages runs **`npm ci`** then your build command, so **`package-lock.json` must be committed** and kept in sync with `package.json` (run `npm install` locally after dependency changes, then commit the lockfile).
+This app is a **static Vite build** (`npm run build` → `dist/`). Pages runs **`npm ci`** with **npm 10.x** (e.g. 10.9.2), which is **stricter** than npm 11 about optional/bundled deps. If `npm ci` fails on Pages with missing `@emnapi/core` / `@emnapi/runtime`, regenerate the lockfile with the same npm major as CI:
+
+```bash
+cd nexus && npm run lockfile:pages
+```
+
+Then commit **`package-lock.json`**. (Alternatively: set the Pages **Build command** to `npm install && npm run build`—works but is slower and less reproducible than a fixed lockfile.)
 
 **Project settings (Workers & Pages → your project → Settings → Builds & deployments):**
 
