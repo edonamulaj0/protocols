@@ -1,0 +1,24 @@
+export function PrivacyPage() {
+  return (
+    <div className="mx-auto max-w-2xl">
+      <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Privacy Policy</h1>
+      <p className="mt-2 text-sm text-[var(--muted)]">Last updated: April 2026 · Nexus MVP (local-only)</p>
+      <div className="mt-8 space-y-4 text-sm leading-relaxed text-[var(--muted)]">
+        <p>
+          Sign-in is with Google (Sign in with Google). From Google we only read your name and email from the ID token and store them locally
+          in your browser, together with the age you enter (Google does not provide age). Likes, votes, and activity history are also stored
+          locally unless you clear site data. There is no Nexus-hosted account database in this MVP.
+        </p>
+        <p>
+          If you use optional API keys in development proxies, those keys are configured in your
+          environment—not embedded in shared static builds by default for the batch script path.
+        </p>
+        <p>
+          We do not sell your data because we do not operate a commercial data collection backend
+          for this MVP. Third-party services you configure separately (e.g. analytics) are governed
+          by their own policies.
+        </p>
+      </div>
+    </div>
+  )
+}
