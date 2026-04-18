@@ -18,6 +18,25 @@ function displayNameFromJwt(p) {
   return (combined || 'Member').slice(0, 120)
 }
 
+/** @param {string} iso `YYYY-MM-DD` (calendar date in local terms when parsed as UTC midnight is wrong — parse parts manually) */
+function ageFromBirthDateString(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '').trim())
+  if (!m) return null
+  const y = Number(m[1])
+  const mo = Number(m[2]) - 1
+  const d = Number(m[3])
+  if (!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(d)) return null
+  const born = new Date(y, mo, d)
+  if (Number.isNaN(born.getTime())) return null
+  const today = new Date()
+  if (born > today) return null
+  let age = today.getFullYear() - born.getFullYear()
+  const md = today.getMonth() - born.getMonth()
+  if (md < 0 || (md === 0 && today.getDate() < born.getDate())) age -= 1
+  if (age < 0 || age > 120) return null
+  return age
+}
+
 export const useUserStore = create(
   persist(
     (set, get) => ({
@@ -25,8 +44,10 @@ export const useUserStore = create(
       googleSub: '',
       email: '',
       name: '',
-      /** @type {number | null} */
+      /** @type {number | null} legacy / cache when using date of birth */
       age: null,
+      /** `YYYY-MM-DD`, device-local; reused after Google sign-out */
+      birthDate: '',
       commentHistory: [],
       stanceHistory: [],
       joinedDiscussionIds: [],
@@ -54,21 +75,37 @@ export const useUserStore = create(
         const n = typeof raw === 'number' ? raw : Number(raw)
         const a =
           Number.isFinite(n) && !Number.isNaN(n) && n >= 13 && n <= 120 ? Math.floor(n) : null
-        set({ age: a })
+        set({ age: a, birthDate: '' })
       },
 
+      /** Age from saved birthday, else legacy `age` field */
+      getProfileAge: () => {
+        const s = get()
+        const fromDob = ageFromBirthDateString(s.birthDate)
+        if (fromDob != null && fromDob >= 13 && fromDob <= 120) return fromDob
+        if (s.age != null && s.age >= 13 && s.age <= 120) return s.age
+        return null
+      },
+
+      /**
+       * @param {string} iso `YYYY-MM-DD`
+       */
+      setBirthDate: (iso) => {
+        const trimmed = String(iso || '').trim()
+        const computed = ageFromBirthDateString(trimmed)
+        if (computed == null || computed < 13 || computed > 120) {
+          set({ birthDate: '', age: null })
+          return
+        }
+        set({ birthDate: trimmed, age: computed })
+      },
+
+      /** Clears Google session only; keeps birthday, age cache, and activity on this device */
       signOut: () =>
         set({
           googleSub: '',
           email: '',
           name: '',
-          age: null,
-          commentHistory: [],
-          stanceHistory: [],
-          joinedDiscussionIds: [],
-          stats: emptyStats(),
-          activityFeed: [],
-          likedDiscussionIds: [],
         }),
 
       pushActivity: (entry) => {
@@ -208,6 +245,7 @@ export const useUserStore = create(
         email: s.email,
         name: s.name,
         age: s.age,
+        birthDate: s.birthDate,
         commentHistory: s.commentHistory,
         stanceHistory: s.stanceHistory,
         joinedDiscussionIds: s.joinedDiscussionIds,

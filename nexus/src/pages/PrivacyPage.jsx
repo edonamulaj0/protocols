@@ -6,7 +6,8 @@ export function PrivacyPage() {
       <div className="mt-8 space-y-4 text-sm leading-relaxed text-[var(--muted)]">
         <p>
           Sign-in is with Google (Sign in with Google). From Google we only read your name and email from the ID token and store them locally
-          in your browser, together with the age you enter (Google does not provide age). Likes, votes, and activity history are also stored
+          in your browser. Your date of birth is entered in the app and stored only in your browser—it is not in Google’s default sign-in token,
+          and it is kept when you sign out of Google so you are not asked again on this device. Likes, votes, and activity history are also stored
           locally unless you clear site data. There is no Nexus-hosted account database in this MVP.
         </p>
         <p>

@@ -1,6 +1,14 @@
 import { motion } from 'framer-motion'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useUserStore } from '../stores/userStore'
+
+function toIsoLocalDate(d) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 
 function stancePill(stance) {
   if (stance === 'For') return 'text-[var(--for)] ring-emerald-500/35'
@@ -15,11 +23,46 @@ const defaultStats = {
   likesGiven: 0,
 }
 
+function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
+  const [dobEdit, setDobEdit] = useState(birthDate || '')
+  return (
+    <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+      <h2 className="font-heading text-sm font-semibold text-[var(--text)]">Birthday on this device</h2>
+      <p className="mt-1 text-xs text-[var(--muted)]">
+        Used for age checks and your profile. Kept when you sign out of Google. Clear site data in your browser to remove it.
+      </p>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="min-w-0 flex-1">
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">Date</label>
+          <input
+            type="date"
+            min={dobMin}
+            max={dobMax}
+            value={dobEdit}
+            onChange={(e) => setDobEdit(e.target.value)}
+            className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--navy-400)]/45"
+          />
+        </div>
+        <button
+          type="button"
+          disabled={!dobEdit || dobEdit < dobMin || dobEdit > dobMax}
+          onClick={() => setBirthDate(dobEdit)}
+          className="rounded-xl bg-[var(--accent)] px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[var(--navy-950)] disabled:opacity-40"
+        >
+          Save birthday
+        </button>
+      </div>
+    </section>
+  )
+}
+
 export function ProfilePage() {
   const { username: routeName } = useParams()
   const selfName = useUserStore((s) => s.name)
   const selfEmail = useUserStore((s) => s.email)
-  const age = useUserStore((s) => s.age)
+  const birthDate = useUserStore((s) => s.birthDate)
+  const profileAge = useUserStore((s) => s.getProfileAge())
+  const setBirthDate = useUserStore((s) => s.setBirthDate)
   const commentHistory = useUserStore((s) => s.commentHistory)
   const joinedDiscussionIds = useUserStore((s) => s.joinedDiscussionIds)
   const stats = useUserStore((s) => ({ ...defaultStats, ...s.stats }))
@@ -34,6 +77,13 @@ export function ProfilePage() {
 
   const historyRows = isOwn ? commentHistory : []
 
+  const { dobMin, dobMax } = useMemo(() => {
+    const today = new Date()
+    const max = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate())
+    const min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate())
+    return { dobMin: toIsoLocalDate(min), dobMax: toIsoLocalDate(max) }
+  }, [])
+
   const statTiles = [
     { label: 'Posts started', value: stats.postsCreated },
     { label: 'Comments', value: commentHistory.length },
@@ -47,16 +97,17 @@ export function ProfilePage() {
     <div>
       <header className="border-b border-[var(--border)] pb-8">
         <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">{displayName}</h1>
-        {isOwn && selfEmail && (
+        {isOwn && (selfEmail || profileAge != null || birthDate) && (
           <p className="mt-2 text-sm text-[var(--muted)]">
-            <span className="text-[var(--text)]">{selfEmail}</span>
-            {age != null && (
+            {selfEmail ? <span className="text-[var(--text)]">{selfEmail}</span> : null}
+            {selfEmail && profileAge != null ? ' · ' : null}
+            {profileAge != null && (
               <>
-                {' '}
-                · Age <span className="text-[var(--text)]">{age}</span>
+                Age <span className="text-[var(--text)]">{profileAge}</span>
+                {birthDate ? ' (from your saved birthday)' : ''}
               </>
-            )}{' '}
-            · stored on this device only
+            )}
+            {(selfEmail || profileAge != null) && <span> · stored on this device only</span>}
           </p>
         )}
         {!isOwn && (
@@ -66,6 +117,16 @@ export function ProfilePage() {
           </p>
         )}
       </header>
+
+      {isOwn && (
+        <ProfileBirthdayEditor
+          key={birthDate || 'new'}
+          birthDate={birthDate}
+          dobMin={dobMin}
+          dobMax={dobMax}
+          setBirthDate={setBirthDate}
+        />
+      )}
 
       {isOwn && (
         <section className="mt-8">

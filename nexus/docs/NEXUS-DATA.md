@@ -87,4 +87,4 @@ Successful (or heuristic) “both sides” payloads are cached in `localStorage`
 
 ## Google sign-in and notifications
 
-There is no Nexus backend. Sign-in uses **Google**; the app decodes the ID token for **name** and **email**, then asks for **age** locally (Google does not return age). Those fields plus comment history persist with **Zustand `persist`** in the browser (`nexus-user-v3`). Notification items are partly **seeded for demo** and partly generated when you post a comment.
+There is no Nexus backend. Sign-in uses **Google**; the app decodes the ID token for **name** and **email**, then asks for **date of birth** locally (Google’s default token does not include birthday or age). Birthday and derived age persist on the device and are **kept when you sign out of Google** so returning users are not prompted again. Comment history and notifications behave as before (`nexus-user-v3` persist bucket).

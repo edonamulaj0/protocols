@@ -36,17 +36,12 @@ function DiscussionPageInner({ id, preferredStance }) {
   const sortedComments = useDiscussionStore((s) => s.sortedComments)
 
   const displayName = useUserStore((s) => s.name)
-  const canComment = useUserStore(
-    (s) =>
-      Boolean(
-        s.googleSub?.trim() &&
-          s.email?.trim() &&
-          s.name?.trim() &&
-          s.age != null &&
-          s.age >= 13 &&
-          s.age <= 120,
-      ),
-  )
+  const canComment = useUserStore((s) => {
+    const a = s.getProfileAge()
+    return Boolean(
+      s.googleSub?.trim() && s.email?.trim() && s.name?.trim() && a != null && a >= 13 && a <= 120,
+    )
+  })
   const recordComment = useUserStore((s) => s.recordComment)
   const recordVoteGiven = useUserStore((s) => s.recordVoteGiven)
   const pushNotif = useNotificationStore((s) => s.push)
@@ -262,7 +257,7 @@ function DiscussionPageInner({ id, preferredStance }) {
             <div>
               {!canComment && (
                 <p className="mb-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--muted)]">
-                  Sign in with Google and confirm your age from the prompt to comment.
+                  Sign in with Google and save your birthday from the prompt to comment (birthday stays on this device).
                 </p>
               )}
               <form onSubmit={onSubmitComment} className="mb-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">

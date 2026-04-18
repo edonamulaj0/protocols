@@ -1,19 +1,34 @@
 import { GoogleLogin } from '@react-oauth/google'
 import { jwtDecode } from 'jwt-decode'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useUserStore } from '../stores/userStore'
 import { useScrollLock } from '../hooks/useScrollLock'
 
+function toIsoLocalDate(d) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 export function AuthGate() {
   const googleSub = useUserStore((s) => s.googleSub)
-  const age = useUserStore((s) => s.age)
+  const birthDate = useUserStore((s) => s.birthDate)
+  const profileAge = useUserStore((s) => s.getProfileAge())
   const setGoogleProfileFromJwt = useUserStore((s) => s.setGoogleProfileFromJwt)
-  const setAge = useUserStore((s) => s.setAge)
-  const [ageDraft, setAgeDraft] = useState('')
+  const setBirthDate = useUserStore((s) => s.setBirthDate)
+  const [dobDraft, setDobDraft] = useState('')
   const [hydrated, setHydrated] = useState(() => useUserStore.persist.hasHydrated())
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+  const { dobMin, dobMax } = useMemo(() => {
+    const today = new Date()
+    const max = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate())
+    const min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate())
+    return { dobMin: toIsoLocalDate(min), dobMax: toIsoLocalDate(max) }
+  }, [])
 
   useEffect(() => {
     if (hydrated) return undefined
@@ -21,18 +36,19 @@ export function AuthGate() {
   }, [hydrated])
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect -- prefill age draft after hydrate */
-    if (age != null) setAgeDraft(String(age))
+    /* eslint-disable react-hooks/set-state-in-effect -- prefill DOB draft after hydrate */
+    if (birthDate) setDobDraft(birthDate)
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [age])
+  }, [birthDate])
 
   const needsGoogle = !googleSub?.trim()
-  const needsAge = googleSub?.trim() && (age == null || age < 13 || age > 120)
-  const open =
-    hydrated && Boolean(clientId) && (needsGoogle || needsAge)
+  const needsDob = googleSub?.trim() && profileAge == null
+  const open = hydrated && Boolean(clientId) && (needsGoogle || needsDob)
   const missingClient = hydrated && !clientId
 
   useScrollLock(open || missingClient)
+
+  const dobOk = dobDraft >= dobMin && dobDraft <= dobMax
 
   return (
     <>
@@ -85,8 +101,9 @@ export function AuthGate() {
                 Sign in to Nexus
               </h2>
               <p className="mt-2 text-sm text-[var(--muted)]">
-                Use Google to continue. We read your name and email from the sign-in token and keep them only in this browser. Google does not
-                share your age; you will enter it on the next step for local display only.
+                Use Google to continue. We read your name and email from the sign-in token and keep them only in this browser. Google’s default
+                sign-in does not include birthday or age—after sign-in you’ll enter your date of birth once; it stays on this device and is kept
+                when you sign out of Google so you are not asked again.
               </p>
               <div className="mt-6 flex justify-center">
                 <GoogleLogin
@@ -113,7 +130,7 @@ export function AuthGate() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {open && needsAge && (
+        {open && needsDob && (
           <motion.div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
             initial={{ opacity: 0 }}
@@ -126,39 +143,35 @@ export function AuthGate() {
               animate={{ scale: 1, opacity: 1 }}
               role="dialog"
               aria-modal="true"
-              aria-labelledby="age-gate-title"
+              aria-labelledby="dob-gate-title"
             >
-              <h2 id="age-gate-title" className="font-heading text-2xl font-semibold text-[var(--text)]">
-                Your age
+              <h2 id="dob-gate-title" className="font-heading text-2xl font-semibold text-[var(--text)]">
+                Date of birth
               </h2>
               <p className="mt-2 text-sm text-[var(--muted)]">
-                Google does not provide age. Enter yours for this device only (comments and profile). We do not send it to Google.
+                Saved only in this browser. We use it to verify you’re at least 13 and to show your age on your profile; it is not sent to Google.
+                If you already saved a birthday on this device, it is reused after you sign in again.
               </p>
               <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                Age
+                Birthday
               </label>
               <input
-                type="number"
-                min={13}
-                max={120}
-                value={ageDraft}
-                onChange={(e) => setAgeDraft(e.target.value)}
+                type="date"
+                min={dobMin}
+                max={dobMax}
+                value={dobDraft}
+                onChange={(e) => setDobDraft(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-3 text-[var(--text)] outline-none focus:border-[var(--navy-400)]/45"
-                placeholder="13–120"
               />
               <motion.button
                 type="button"
-                disabled={
-                  !Number.isFinite(Number(ageDraft)) ||
-                  Number(ageDraft) < 13 ||
-                  Number(ageDraft) > 120
-                }
+                disabled={!dobOk}
                 className="accent-glow-hover mt-5 w-full rounded-xl bg-[var(--accent)] py-3 text-sm font-bold uppercase tracking-wide text-[var(--navy-950)] disabled:cursor-not-allowed disabled:opacity-40"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
-                  const a = Number(ageDraft)
-                  setAge(Number.isFinite(a) && a >= 13 && a <= 120 ? a : null)
+                  if (!dobOk) return
+                  setBirthDate(dobDraft)
                 }}
               >
                 Continue
