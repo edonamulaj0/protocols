@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useShallow } from 'zustand/react/shallow'
 import { useUserStore } from '../stores/userStore'
 
 function toIsoLocalDate(d) {
@@ -94,7 +95,7 @@ export function ProfilePage() {
   const joinedDiscussionIds = useUserStore((s) => s.joinedDiscussionIds)
   const stats = useUserStore((s) => ({ ...defaultStats, ...s.stats }))
   const activityFeed = useUserStore((s) => s.activityFeed || [])
-  const categoryEngagement = useUserStore((s) => s.categoryEngagement())
+  const categoryEngagement = useUserStore(useShallow((s) => s.categoryEngagement()))
 
   const isMeRoute = routeName === 'me'
   const displayName =
