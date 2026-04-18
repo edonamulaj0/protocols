@@ -53,7 +53,9 @@ Optional: set **Environment variables** for the **Production** and **Preview** b
 
 **Google OAuth:** add your Pages URL to the OAuth client **Authorized JavaScript origins**, e.g. `https://<project>.pages.dev` and your custom domain.
 
-**SPA routing:** `public/_redirects` is copied into `dist` so deep links like `/discussion/123` resolve to `index.html` with HTTP 200.
+**SPA routing:** `public/_redirects` is copied into `dist` with `/* /index.html 200` so deep links like `/discussion/123` and `/profile/me` serve `index.html`. Cloudflare Pages also treats sites **without** a top-level `404.html` as SPAs; keep `_redirects` anyway for consistent rewrites.
+
+**Direct URLs / refresh:** The feed store starts with `loading: true` until `FeedBootstrap` finishes so discussion pages do not flash “not found” while `discussions.json` or Reddit loads. Discussion hydration re-runs when `posts` updates.
 
 **Node version:** `nexus/.node-version` is set to `22` to align with common CI images; override in Pages with `NODE_VERSION` if needed.
 

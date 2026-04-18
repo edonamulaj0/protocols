@@ -8,7 +8,8 @@ let refreshTimer = null
 
 export const useFeedStore = create((set, get) => ({
   posts: [],
-  loading: false,
+  /** Start true so deep-linked discussion pages wait for bootstrap instead of flashing “not found”. */
+  loading: true,
   loadingMore: false,
   hasMore: true,
   afterBySub: {},

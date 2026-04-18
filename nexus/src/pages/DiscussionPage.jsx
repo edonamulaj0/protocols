@@ -34,6 +34,8 @@ function DiscussionPageInner({ id, preferredStance }) {
   const voteComment = useDiscussionStore((s) => s.voteComment)
   const setSort = useDiscussionStore((s) => s.setSort)
   const sortedComments = useDiscussionStore((s) => s.sortedComments)
+  const feedLoading = useFeedStore((s) => s.loading)
+  const feedPosts = useFeedStore((s) => s.posts)
 
   const displayName = useUserStore((s) => s.name)
   const canComment = useUserStore((s) => {
@@ -56,7 +58,7 @@ function DiscussionPageInner({ id, preferredStance }) {
   useEffect(() => {
     if (!id) return
     hydrateFromFeed(id)
-  }, [id, hydrateFromFeed])
+  }, [id, hydrateFromFeed, feedPosts, feedLoading])
 
   const post = detail?.post
   const comments = id ? sortedComments(id) : []
@@ -78,6 +80,14 @@ function DiscussionPageInner({ id, preferredStance }) {
   }, [post])
 
   if (!post) {
+    if (feedLoading) {
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-[var(--muted)]">Loading discussion…</p>
+          <div className="h-2 max-w-xs animate-pulse rounded-full bg-[var(--navy-900)]" />
+        </div>
+      )
+    }
     return (
       <p className="text-[var(--muted)]">
         Discussion not found.{' '}

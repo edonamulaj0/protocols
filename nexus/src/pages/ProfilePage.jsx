@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useUserStore } from '../stores/userStore'
 
@@ -58,6 +58,13 @@ function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
 
 export function ProfilePage() {
   const { username: routeName } = useParams()
+  const [persistHydrated, setPersistHydrated] = useState(() => useUserStore.persist.hasHydrated())
+
+  useEffect(() => {
+    if (persistHydrated) return undefined
+    return useUserStore.persist.onFinishHydration(() => setPersistHydrated(true))
+  }, [persistHydrated])
+
   const selfName = useUserStore((s) => s.name)
   const selfEmail = useUserStore((s) => s.email)
   const birthDate = useUserStore((s) => s.birthDate)
@@ -92,6 +99,14 @@ export function ProfilePage() {
     { label: 'Downvotes given', value: stats.downvotesGiven },
     { label: 'Discussions joined', value: isOwn ? joinedDiscussionIds.length : 0 },
   ]
+
+  if (routeName === 'me' && !persistHydrated) {
+    return (
+      <div>
+        <p className="text-sm text-[var(--muted)]">Loading profile…</p>
+      </div>
+    )
+  }
 
   return (
     <div>
