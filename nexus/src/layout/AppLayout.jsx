@@ -35,6 +35,8 @@ export function AppLayout() {
 
   const anyOverlay = notifOpen || (menuOpen && !isDesktopNav)
 
+  const isExplore = location.pathname === '/explore'
+
   return (
     <div className="flex min-h-svh flex-col bg-[var(--page)] pt-12">
       <DesktopSidebar onNewDiscussion={() => setModalOpen(true)} />
@@ -54,7 +56,7 @@ export function AppLayout() {
         <AnimatePresence mode="sync">
           <motion.main
             key={location.pathname}
-            className={`mx-auto w-full max-w-3xl flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-[calc(4rem+env(safe-area-inset-bottom))]'} md:pb-10`}
+            className={`mx-auto w-full flex-1 px-4 py-6 sm:px-6 lg:px-10 ${isExplore ? 'max-w-6xl' : 'max-w-3xl'} ${anyOverlay ? '' : 'pb-[calc(4rem+env(safe-area-inset-bottom))]'} md:pb-12`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -64,11 +66,13 @@ export function AppLayout() {
           </motion.main>
         </AnimatePresence>
 
-        <div className="hidden w-[260px] shrink-0 py-6 pr-4 lg:block xl:w-[280px]">
-          <div className="sticky top-16">
-            <TrendingPanel />
+        {!isExplore && (
+          <div className="hidden w-[260px] shrink-0 py-6 pr-4 lg:block xl:w-[280px]">
+            <div className="sticky top-16">
+              <TrendingPanel />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <MobileBottomNav />

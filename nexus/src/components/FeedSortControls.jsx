@@ -4,10 +4,14 @@ const OPTIONS = [
   { value: 'popular', label: 'Most popular' },
 ]
 
-export function FeedSortControls({ value, onChange, className = '' }) {
+export function FeedSortControls({ value, onChange, className = '', comfortable = false }) {
+  const btnClass = comfortable
+    ? 'rounded-none px-5 py-2.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors'
+    : 'rounded-none px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors'
+
   return (
     <div
-      className={`flex flex-wrap gap-2 ${className}`}
+      className={`flex flex-wrap gap-3 ${className}`}
       role="group"
       aria-label="Sort discussions"
     >
@@ -16,7 +20,7 @@ export function FeedSortControls({ value, onChange, className = '' }) {
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`rounded-none px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors ${
+          className={`${btnClass} ${
             value === o.value
               ? 'bg-[var(--surface-hi)] text-[var(--text)] ring-[var(--signal)]'
               : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)] hover:bg-[var(--surface-hi)]'

@@ -44,7 +44,8 @@ function stanceButtonClass(stance, selected) {
     : 'bg-[var(--stance-neutral-bg)] text-[var(--stance-neutral-text)] ring-[var(--border)] hover:text-[var(--text)]'
 }
 
-export function DiscussionCard({ post }) {
+export function DiscussionCard({ post, variant = 'default' }) {
+  const isExplore = variant === 'explore'
   const [stance, setStance] = useState(null)
   const dist = post.stanceDistribution || { for: 33, against: 34, neutral: 33 }
   const likedIds = useUserStore((s) => s.likedDiscussionIds)
@@ -54,6 +55,17 @@ export function DiscussionCard({ post }) {
   )
   const toggleLike = useUserStore((s) => s.toggleDiscussionLike)
 
+  const metaPad = isExplore ? 'px-6 py-4' : 'px-4 py-2.5 sm:px-5 sm:pb-2.5'
+  const bodyPad = isExplore ? 'p-6 lg:p-7' : 'p-4 sm:p-5'
+  const votePad = isExplore ? 'px-6 py-5 lg:px-7 lg:py-6' : 'px-4 pb-4 pt-3 sm:px-5'
+  const titleClass = isExplore
+    ? 'font-heading line-clamp-2 text-2xl leading-snug text-[var(--text-hi)] group-hover:text-[var(--signal)]'
+    : 'font-heading line-clamp-2 text-xl leading-tight text-[var(--text-hi)] group-hover:text-[var(--signal)]'
+  const stanceBtnClass = isExplore
+    ? 'rounded-none px-4 py-2.5 text-sm font-semibold ring-1 transition-colors'
+    : 'rounded-none px-3 py-1.5 text-xs font-semibold ring-1 transition-colors'
+  const likeBtnClass = isExplore ? 'h-11 w-11' : 'h-10 w-10'
+
   return (
     <motion.div variants={cardVariants} className="h-full">
       <div className="flex h-full flex-col overflow-hidden rounded-none border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--surface)] shadow-[var(--shadow-card)] transition-[transform,box-shadow,border-color] duration-300 hover:border-t-[var(--signal)] hover:shadow-[var(--shadow-hover)]">
@@ -62,9 +74,9 @@ export function DiscussionCard({ post }) {
           state={{ preferredStance: stance }}
           className="group flex min-h-0 flex-1 flex-col outline-none"
         >
-          <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2.5 sm:p-5 sm:pb-2.5">
+          <div className={`flex flex-wrap items-center gap-2.5 border-b border-[var(--border)] ${metaPad}`}>
             {post.category && (
-              <span className="rounded-none bg-[var(--surface-hi)] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-[var(--text-hi)] ring-1 ring-[var(--border)]">
+              <span className="rounded-none bg-[var(--surface-hi)] px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-[var(--text-hi)] ring-1 ring-[var(--border)]">
                 {post.category}
               </span>
             )}
@@ -76,7 +88,7 @@ export function DiscussionCard({ post }) {
               {formatTime(post.createdUtc)}
             </span>
           </div>
-          <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-[var(--surface-hi)]">
+          <div className={`relative w-full shrink-0 overflow-hidden bg-[var(--surface-hi)] ${isExplore ? 'aspect-[2/1] lg:aspect-[21/9]' : 'aspect-[16/9]'}`}>
             <img
               src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/polaris/960/520'}
               alt=""
@@ -85,29 +97,31 @@ export function DiscussionCard({ post }) {
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--page)]/90 via-transparent to-transparent" />
           </div>
-          <div className="flex flex-1 flex-col p-4 sm:p-5">
-            <h3 className="font-heading line-clamp-2 text-xl leading-tight text-[var(--text-hi)] group-hover:text-[var(--signal)]">
+          <div className={`flex flex-1 flex-col ${bodyPad}`}>
+            <h3 className={titleClass}>
               {post.title}
             </h3>
-            <div className="mt-4">
-              <StanceBar distribution={dist} commentCount={post.num_comments} />
+            <div className={isExplore ? 'mt-6' : 'mt-4'}>
+              <StanceBar distribution={dist} commentCount={isExplore ? null : post.num_comments} />
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[10px] text-[var(--muted)]">
-              <span>💬 {post.num_comments ?? 0}</span>
-              <span>↑ {formatScore(post.score ?? 0)}</span>
-              <CivilityBadge value={post.civility ?? 70} />
-            </div>
+            {!isExplore && (
+              <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[10px] text-[var(--muted)]">
+                <span>💬 {post.num_comments ?? 0}</span>
+                <span>↑ {formatScore(post.score ?? 0)}</span>
+                <CivilityBadge value={post.civility ?? 70} />
+              </div>
+            )}
           </div>
         </Link>
         <div
-          className="border-t border-[var(--border)] px-4 pb-4 pt-3 sm:px-5"
+          className={`border-t border-[var(--border)] ${votePad}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">
+          <span className={`mb-3 block font-mono font-bold uppercase tracking-wide text-[var(--muted)] ${isExplore ? 'text-[11px]' : 'text-[10px]'}`}>
             Your stance before opening
           </span>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className={`flex flex-wrap ${isExplore ? 'gap-3' : 'gap-2'}`}>
               {['For', 'Against', 'Neutral'].map((s) => (
                 <motion.button
                   key={s}
@@ -116,7 +130,7 @@ export function DiscussionCard({ post }) {
                     e.preventDefault()
                     setStance(s)
                   }}
-                  className={`rounded-none px-3 py-1.5 text-xs font-semibold ring-1 transition-colors ${stanceButtonClass(s, stance === s)}`}
+                  className={`${stanceBtnClass} ${stanceButtonClass(s, stance === s)}`}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -127,7 +141,7 @@ export function DiscussionCard({ post }) {
             <motion.button
               type="button"
               aria-label={liked ? 'Unlike' : 'Like discussion'}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-none ring-1 transition-colors ${
+              className={`flex ${likeBtnClass} shrink-0 items-center justify-center rounded-none ring-1 transition-colors ${
                 liked
                   ? 'text-[var(--signal)] ring-[var(--signal)]/40 bg-[var(--signal-muted)]'
                   : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
