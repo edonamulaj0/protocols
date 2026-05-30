@@ -22,7 +22,7 @@ export function NotificationsPanel({ open, onClose }) {
             <motion.div
               key="notif-backdrop"
               role="presentation"
-              className="fixed inset-0 z-[109] bg-black/30"
+              className="fixed inset-0 z-[109] bg-[var(--overlay)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -34,8 +34,8 @@ export function NotificationsPanel({ open, onClose }) {
             key="notif-panel"
             className={
               isDesktop
-                ? 'fixed right-4 top-14 z-[110] flex max-h-[min(32rem,75vh)] w-[min(20rem,calc(100vw-15rem))] flex-col overflow-hidden rounded-none border border-[var(--border)] bg-[var(--ink-950)] shadow-2xl lg:right-8 lg:top-16'
-                : 'fixed inset-0 z-[110] flex flex-col bg-[var(--ink-950)]'
+                ? 'fixed right-4 top-14 z-[110] flex max-h-[min(32rem,75vh)] w-[min(20rem,calc(100vw-15rem))] flex-col overflow-hidden rounded-none border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] lg:right-8 lg:top-16'
+                : 'fixed inset-0 z-[110] flex flex-col bg-[var(--surface)]'
             }
             initial={
               isDesktop ? { opacity: 0, scale: 0.96, y: -6 } : { opacity: 0 }
@@ -54,7 +54,7 @@ export function NotificationsPanel({ open, onClose }) {
               <motion.button
                 type="button"
                 onClick={onClose}
-                className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-none text-[var(--text)] transition-colors hover:bg-[var(--ink-900)]"
+                className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-none text-[var(--text)] transition-colors hover:bg-[var(--surface-hi)]"
                 aria-label="Close notifications"
                 whileTap={{ scale: 0.95 }}
               >
@@ -80,7 +80,7 @@ export function NotificationsPanel({ open, onClose }) {
                       onClose()
                       navigate(`/discussion/${n.discussionId}`)
                     }}
-                    className="flex w-full gap-2 rounded-none border border-transparent p-3 text-left transition-colors hover:border-[var(--border)] hover:bg-[var(--surface)] sm:gap-3 sm:p-4"
+                    className="flex w-full gap-2 rounded-none border border-transparent p-3 text-left transition-colors hover:border-[var(--border)] hover:bg-[var(--surface-hi)] sm:gap-3 sm:p-4"
                   >
                     <span className="text-xl sm:text-2xl" aria-hidden>
                       {n.icon}

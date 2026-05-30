@@ -16,10 +16,10 @@ export function FeedSortControls({ value, onChange, className = '' }) {
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors ${
+          className={`rounded-none px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors ${
             value === o.value
-              ? 'bg-[var(--ink-700)] text-[var(--text)] ring-[var(--signal)]/40'
-              : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
+              ? 'bg-[var(--surface-hi)] text-[var(--text)] ring-[var(--signal)]'
+              : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)] hover:bg-[var(--surface-hi)]'
           }`}
         >
           {o.label}

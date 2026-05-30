@@ -1,41 +1,103 @@
 @import 'tailwindcss';
 
-/* ─── Design tokens ─────────────────────────────────────────────────── */
+/* ─── Shared brand ──────────────────────────────────────────────────── */
 :root {
-  /* Base ink scale */
-  --ink-950:  #0E0E0F;   /* page background   */
-  --ink-900:  #161618;   /* card surface      */
-  --ink-800:  #1E1E21;   /* elevated surface  */
-  --ink-700:  #2A2A2E;   /* border / divider  */
-  --ink-500:  #4A4A52;   /* disabled          */
-  --ink-300:  #9A9AA8;   /* muted text        */
-  --ink-100:  #E8E8EF;   /* body text         */
-  --ink-000:  #F7F7FA;   /* headings / labels */
-
-  /* Signal red — the single accent */
-  --signal:       #D93025;  /* primary accent CTA, badges, progress  */
-  --signal-dim:   #9A1F17;  /* hover / pressed state                 */
-  --signal-muted: rgba(217,48,37,.12); /* tinted backgrounds          */
-
-  /* Semantic aliases */
-  --surface:    var(--ink-900);
-  --surface-hi: var(--ink-800);
-  --border:     rgba(255,255,255,.07);
-  --border-hi:  rgba(255,255,255,.13);
-  --text:       var(--ink-100);
-  --text-hi:    var(--ink-000);
-  --muted:      var(--ink-300);
-
-  /* Stance colours — tints only, no hues outside the two-colour system */
-  --for:        #E8E8EF;  /* white-ish — pro */
-  --against:    #D93025;  /* signal red — con */
-  --neutral:    #4A4A52;  /* ink-500 — neutral */
-
-  /* Typography */
+  --signal:       #D93025;
+  --signal-dim:   #9A1F17;
   --font-display: 'Bebas Neue', 'Impact', sans-serif;
   --font-heading: 'DM Serif Display', Georgia, serif;
   --font-body:    'IBM Plex Sans', 'Helvetica Neue', sans-serif;
   --font-mono:    'IBM Plex Mono', monospace;
+
+  /* Stance — same hues both modes */
+  --for:     #E8E8EF;
+  --against: #D93025;
+  --neutral: #4A4A52;
+}
+
+/* ─── Dark theme (default) ──────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink-950:  #0E0E0F;
+  --ink-900:  #161618;
+  --ink-800:  #1E1E21;
+  --ink-700:  #2A2A2E;
+  --ink-500:  #4A4A52;
+  --ink-300:  #9A9AA8;
+  --ink-100:  #E8E8EF;
+  --ink-000:  #F7F7FA;
+
+  --signal-muted: rgba(217,48,37,.12);
+  --signal-on:    #FFFFFF;
+
+  --page:         var(--ink-950);
+  --surface:      var(--ink-900);
+  --surface-hi:   var(--ink-800);
+  --border:       rgba(255,255,255,.07);
+  --border-hi:    rgba(255,255,255,.13);
+  --text:         var(--ink-100);
+  --text-hi:      var(--ink-000);
+  --muted:        var(--ink-300);
+  --overlay:      rgba(0,0,0,.65);
+  --shadow-card:  0 8px 32px rgba(0,0,0,.25);
+  --shadow-hover: 0 8px 32px rgba(217,48,37,.08);
+  --grain-opacity: 0.035;
+  --scrollbar-track: var(--ink-950);
+  --scrollbar-thumb: var(--ink-700);
+
+  --for:     #E8E8EF;
+  --neutral: #4A4A52;
+
+  --stance-for-bg:      rgba(232,232,239,.08);
+  --stance-for-text:    var(--for);
+  --stance-against-bg:  var(--signal-muted);
+  --stance-against-text: var(--signal);
+  --stance-neutral-bg:  var(--ink-800);
+  --stance-neutral-text: var(--muted);
+}
+
+/* ─── Light theme ───────────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --ink-950:  #F7F7FA;
+  --ink-900:  #FFFFFF;
+  --ink-800:  #F0F0F4;
+  --ink-700:  #E2E2EA;
+  --ink-500:  #9898A8;
+  --ink-300:  #5C5C6E;
+  --ink-100:  #2A2A32;
+  --ink-000:  #0E0E0F;
+
+  --signal-muted: rgba(217,48,37,.08);
+  --signal-on:    #FFFFFF;
+
+  --page:         var(--ink-950);
+  --surface:      var(--ink-900);
+  --surface-hi:   var(--ink-800);
+  --border:       rgba(0,0,0,.08);
+  --border-hi:    rgba(0,0,0,.14);
+  --text:         var(--ink-100);
+  --text-hi:      var(--ink-000);
+  --muted:        var(--ink-300);
+  --overlay:      rgba(14,14,15,.45);
+  --shadow-card:  0 4px 24px rgba(0,0,0,.06);
+  --shadow-hover: 0 8px 32px rgba(217,48,37,.12);
+  --grain-opacity: 0.025;
+  --scrollbar-track: var(--ink-950);
+  --scrollbar-thumb: var(--ink-700);
+
+  --for:     #2A2A32;
+  --neutral: #9898A8;
+
+  --stance-for-bg:      #F0F0F4;
+  --stance-for-text:    var(--for);
+  --stance-against-bg:  var(--signal-muted);
+  --stance-against-text: var(--signal);
+  --stance-neutral-bg:  var(--ink-800);
+  --stance-neutral-text: var(--muted);
 }
 
 /* ─── Reset & base ───────────────────────────────────────────────────── */
@@ -49,20 +111,20 @@ body {
   font-size: 16px;
   line-height: 1.6;
   color: var(--text);
-  background-color: var(--ink-950);
+  background-color: var(--page);
   -webkit-font-smoothing: antialiased;
+  transition: background-color .2s ease, color .2s ease;
 }
 
 #root { min-height: 100svh; position: relative; z-index: 1; }
 
-/* Grain overlay — editorial texture */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.035;
+  opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -103,9 +165,9 @@ body::before {
 }
 .skeleton-shimmer {
   background: linear-gradient(90deg,
-    var(--ink-900) 0%,
-    var(--ink-800) 50%,
-    var(--ink-900) 100%);
+    var(--surface) 0%,
+    var(--surface-hi) 50%,
+    var(--surface) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -115,5 +177,5 @@ hr.signal { border: none; height: 2px; background: var(--signal); width: 2.5rem;
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--ink-950); }
-::-webkit-scrollbar-thumb { background: var(--ink-700); border-radius: 2px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }

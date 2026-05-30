@@ -23,16 +23,16 @@ export function StanceBar({
   }, [commentCount, forPct, againstPct])
 
   const segments = [
-    { key: 'for',     label: 'For',     pct: forPct,     color: 'bg-[var(--ink-100)]'   },
-    { key: 'against', label: 'Against', pct: againstPct, color: 'bg-[var(--signal)]'     },
-    { key: 'neutral', label: 'Neutral', pct: neutralPct, color: 'bg-[var(--ink-700)]'   },
+    { key: 'for',     label: 'For',     pct: forPct,     color: 'bg-[var(--for)]' },
+    { key: 'against', label: 'Against', pct: againstPct, color: 'bg-[var(--signal)]' },
+    { key: 'neutral', label: 'Neutral', pct: neutralPct, color: 'bg-[var(--neutral)]' },
   ]
 
   return (
     <div className={`relative ${className}`}>
       {showTooltip && hovered && (
         <div
-          className="pointer-events-none absolute -top-10 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-none border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--text)] shadow-lg"
+          className="pointer-events-none absolute -top-10 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-none border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--text)] shadow-[var(--shadow-card)]"
           role="tooltip"
         >
           {segments.find((s) => s.key === hovered)?.label}:{' '}
@@ -45,7 +45,7 @@ export function StanceBar({
           )}
         </div>
       )}
-      <div className="flex h-2.5 w-full overflow-hidden rounded-none bg-[var(--ink-900)] ring-1 ring-[var(--border)]">
+      <div className="flex h-2.5 w-full overflow-hidden rounded-none bg-[var(--surface-hi)] ring-1 ring-[var(--border)]">
         {segments.map((s, i) => (
           <motion.div
             key={s.key}

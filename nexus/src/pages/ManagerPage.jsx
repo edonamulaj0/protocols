@@ -56,7 +56,7 @@ function PinGate({ onUnlock }) {
           maxLength={4}
           value={input}
           onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0,4))}
-          className="w-full rounded-none border border-[var(--border)] bg-[var(--ink-800)] px-4 py-3 font-mono text-xl tracking-[.5em] text-center text-[var(--text-hi)] outline-none focus:border-[var(--signal)]"
+          className="w-full rounded-none border border-[var(--border)] bg-[var(--surface-hi)] px-4 py-3 font-mono text-xl tracking-[.5em] text-center text-[var(--text-hi)] outline-none focus:border-[var(--signal)]"
           placeholder="• • • •"
           autoFocus
         />
@@ -67,7 +67,7 @@ function PinGate({ onUnlock }) {
             maxLength={4}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value.replace(/\D/g, '').slice(0,4))}
-            className="w-full rounded-none border border-[var(--border)] bg-[var(--ink-800)] px-4 py-3 font-mono text-xl tracking-[.5em] text-center text-[var(--text-hi)] outline-none focus:border-[var(--signal)]"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--surface-hi)] px-4 py-3 font-mono text-xl tracking-[.5em] text-center text-[var(--text-hi)] outline-none focus:border-[var(--signal)]"
             placeholder="Confirm PIN"
           />
         )}
@@ -76,7 +76,7 @@ function PinGate({ onUnlock }) {
         )}
         <motion.button
           type="submit"
-          className="signal-glow-hover w-full bg-[var(--signal)] py-3 text-[11px] font-bold uppercase tracking-[.12em] text-white"
+          className="signal-glow-hover w-full bg-[var(--signal)] py-3 text-[11px] font-bold uppercase tracking-[.12em] text-[var(--signal-on)]"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -125,7 +125,7 @@ function BulletEditor({ bullets, onChange, label, color }) {
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={4}
-            className="w-full min-h-[80px] rounded-none border border-[var(--border)] bg-[var(--ink-950)] px-2 py-2 font-mono text-xs text-[var(--text)] outline-none focus:border-[var(--signal)] resize-y"
+            className="w-full min-h-[80px] rounded-none border border-[var(--border)] bg-[var(--surface)] px-2 py-2 font-mono text-xs text-[var(--text)] outline-none focus:border-[var(--signal)] resize-y"
             placeholder="One bullet per line"
           />
           <button
@@ -154,7 +154,7 @@ function ArticleReviewCard({ post, onApprove, onReject, onUpdateBullets }) {
   const [againstBullets, setAgainstBullets] = useState(post.bothSides?.against || [])
 
   return (
-    <article className="border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--ink-900)] p-5 space-y-4">
+    <article className="border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--surface)] p-5 space-y-4">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -165,7 +165,7 @@ function ArticleReviewCard({ post, onApprove, onReject, onUpdateBullets }) {
             <span className="font-mono text-[9px] text-[var(--muted)]">{post.subreddit}</span>
             {post.verified && <VerifiedBadge />}
             {!post.verified && (
-              <span className="font-mono text-[9px] uppercase tracking-widest bg-[var(--ink-700)] text-[var(--muted)] px-2 py-0.5">
+              <span className="font-mono text-[9px] uppercase tracking-widest bg-[var(--surface-hi)] text-[var(--muted)] px-2 py-0.5">
                 Pending Review
               </span>
             )}
@@ -202,7 +202,7 @@ function ArticleReviewCard({ post, onApprove, onReject, onUpdateBullets }) {
         <motion.button
           type="button"
           onClick={() => onApprove(post.id, forBullets, againstBullets)}
-          className="flex items-center gap-1.5 bg-[var(--signal)] px-4 py-2 text-[10px] font-bold uppercase tracking-[.1em] text-white signal-glow-hover"
+          className="flex items-center gap-1.5 bg-[var(--signal)] px-4 py-2 text-[10px] font-bold uppercase tracking-[.1em] text-[var(--signal-on)] signal-glow-hover"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -212,7 +212,7 @@ function ArticleReviewCard({ post, onApprove, onReject, onUpdateBullets }) {
         <motion.button
           type="button"
           onClick={() => onReject(post.id)}
-          className="flex items-center gap-1.5 border border-[var(--border)] px-4 py-2 text-[10px] font-bold uppercase tracking-[.1em] text-[var(--muted)] hover:border-rose-500/50 hover:text-rose-300"
+          className="flex items-center gap-1.5 border border-[var(--border)] px-4 py-2 text-[10px] font-bold uppercase tracking-[.1em] text-[var(--muted)] hover:border-[var(--signal)]/50 hover:text-[var(--signal)]"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
         >

@@ -28,6 +28,22 @@ function formatScore(n) {
   return String(n)
 }
 
+function stanceButtonClass(stance, selected) {
+  if (stance === 'For') {
+    return selected
+      ? 'bg-[var(--stance-for-text)] text-[var(--signal-on)] ring-[var(--stance-for-text)]'
+      : 'bg-[var(--stance-for-bg)] text-[var(--stance-for-text)] ring-[var(--border)] hover:ring-[var(--stance-for-text)]/35'
+  }
+  if (stance === 'Against') {
+    return selected
+      ? 'bg-[var(--signal)] text-[var(--signal-on)] ring-[var(--signal)]'
+      : 'bg-[var(--stance-against-bg)] text-[var(--stance-against-text)] ring-[var(--border)] hover:ring-[var(--stance-against-text)]/35'
+  }
+  return selected
+    ? 'bg-[var(--signal)] text-[var(--signal-on)] ring-[var(--signal)]'
+    : 'bg-[var(--stance-neutral-bg)] text-[var(--stance-neutral-text)] ring-[var(--border)] hover:text-[var(--text)]'
+}
+
 export function DiscussionCard({ post }) {
   const [stance, setStance] = useState(null)
   const dist = post.stanceDistribution || { for: 33, against: 34, neutral: 33 }
@@ -40,15 +56,15 @@ export function DiscussionCard({ post }) {
 
   return (
     <motion.div variants={cardVariants} className="h-full">
-      <div className="flex h-full flex-col overflow-hidden rounded-none border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--ink-900)] shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-[transform,box-shadow,border-color] duration-300 hover:border-t-[var(--signal)] hover:shadow-[0_8px_32px_rgba(217,48,37,.08)]">
+      <div className="flex h-full flex-col overflow-hidden rounded-none border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--surface)] shadow-[var(--shadow-card)] transition-[transform,box-shadow,border-color] duration-300 hover:border-t-[var(--signal)] hover:shadow-[var(--shadow-hover)]">
         <Link
           to={`/discussion/${post.id}`}
           state={{ preferredStance: stance }}
           className="group flex min-h-0 flex-1 flex-col outline-none"
         >
-          <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2.5">
+          <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2.5 sm:p-5 sm:pb-2.5">
             {post.category && (
-              <span className="rounded-none bg-[var(--ink-800)] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-[var(--text-hi)] ring-1 ring-[var(--border)]">
+              <span className="rounded-none bg-[var(--surface-hi)] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-[var(--text-hi)] ring-1 ring-[var(--border)]">
                 {post.category}
               </span>
             )}
@@ -60,17 +76,17 @@ export function DiscussionCard({ post }) {
               {formatTime(post.createdUtc)}
             </span>
           </div>
-          <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-[var(--ink-800)]">
+          <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-[var(--surface-hi)]">
             <img
               src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/polaris/960/520'}
               alt=""
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               loading="lazy"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink-950)]/90 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--page)]/90 via-transparent to-transparent" />
           </div>
-          <div className="flex flex-1 flex-col p-4">
-            <h3 className="font-heading line-clamp-2 text-xl leading-tight text-[var(--text-hi)] group-hover:text-white">
+          <div className="flex flex-1 flex-col p-4 sm:p-5">
+            <h3 className="font-heading line-clamp-2 text-xl leading-tight text-[var(--text-hi)] group-hover:text-[var(--signal)]">
               {post.title}
             </h3>
             <div className="mt-4">
@@ -84,7 +100,7 @@ export function DiscussionCard({ post }) {
           </div>
         </Link>
         <div
-          className="border-t border-[var(--border)] px-4 pb-4 pt-3"
+          className="border-t border-[var(--border)] px-4 pb-4 pt-3 sm:px-5"
           onClick={(e) => e.stopPropagation()}
         >
           <span className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">
@@ -100,11 +116,7 @@ export function DiscussionCard({ post }) {
                     e.preventDefault()
                     setStance(s)
                   }}
-                  className={`rounded-none px-3 py-1.5 text-xs font-semibold ring-1 transition-colors ${
-                    stance === s
-                      ? 'bg-[var(--signal)] text-white ring-[var(--signal)]'
-                      : 'bg-[var(--ink-800)] text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
-                  }`}
+                  className={`rounded-none px-3 py-1.5 text-xs font-semibold ring-1 transition-colors ${stanceButtonClass(s, stance === s)}`}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                 >

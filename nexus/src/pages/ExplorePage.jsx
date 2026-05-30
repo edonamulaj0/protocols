@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useFeedStore } from '../stores/feedStore'
 import { DiscussionCard } from '../components/DiscussionCard'
 import { FeedSortControls } from '../components/FeedSortControls'
+import { SkeletonCard } from '../components/SkeletonCard'
 import { EXPLORE_CATEGORIES, orderPostsForDisplay } from '../lib/feedOrdering'
 
 const containerVariants = {
@@ -12,6 +13,7 @@ const containerVariants = {
 
 export function ExplorePage() {
   const posts = useFeedStore((s) => s.posts)
+  const loading = useFeedStore((s) => s.loading)
   const [cat, setCat] = useState('All')
   const [sort, setSort] = useState('relevance')
 
@@ -41,18 +43,26 @@ export function ExplorePage() {
 
   return (
     <div>
-      <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Explore</h1>
-      <p className="mt-2 text-sm text-[var(--muted)]">
+      <h1 className="font-display text-4xl sm:text-5xl uppercase tracking-widest text-[var(--text-hi)]">Explore</h1>
+      <hr className="signal mt-3" />
+      <p className="mt-3 text-sm text-[var(--muted)]">
         Pick a category, then sort by relevance, recency, or engagement. Same feed as Home—filtered
         here in the browser.
       </p>
 
+      {loading && !posts.length ? (
+        <div className="mt-8 flex flex-col gap-6 sm:gap-8">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      ) : (
       <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
         <aside className="shrink-0 lg:w-56 xl:w-60">
-          <h2 className="font-heading text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+          <h2 className="font-mono text-[9px] uppercase tracking-[.15em] text-[var(--muted)]">
             Categories
           </h2>
-          <ul className="mt-3 flex flex-col gap-1 border border-[var(--border)] rounded-none bg-[var(--surface)]/40 p-1.5">
+          <ul className="mt-3 flex flex-col gap-1 border border-[var(--border)] rounded-none bg-[var(--surface)] p-1.5">
             {EXPLORE_CATEGORIES.map((label) => {
               const count = categoryCounts[label] ?? 0
               const active = cat === label
@@ -63,8 +73,8 @@ export function ExplorePage() {
                     onClick={() => setCat(label)}
                     className={`flex w-full items-center justify-between gap-3 rounded-none px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                       active
-                        ? 'bg-[var(--ink-700)] text-[var(--text)] ring-1 ring-[var(--signal)]/35'
-                        : 'text-[var(--muted)] hover:bg-[var(--ink-900)] hover:text-[var(--text)]'
+                        ? 'bg-[var(--surface-hi)] text-[var(--text)] ring-1 ring-[var(--signal)]'
+                        : 'text-[var(--muted)] hover:bg-[var(--surface-hi)] hover:text-[var(--text)]'
                     }`}
                   >
                     <span>{label}</span>
@@ -85,7 +95,7 @@ export function ExplorePage() {
         <div className="min-w-0 flex-1">
           <FeedSortControls value={sort} onChange={setSort} className="mb-6" />
           <motion.div
-            className="flex flex-col gap-7"
+            className="flex flex-col gap-6 sm:gap-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -99,6 +109,7 @@ export function ExplorePage() {
           )}
         </div>
       </div>
+      )}
     </div>
   )
 }

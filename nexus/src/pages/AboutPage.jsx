@@ -21,13 +21,13 @@ export function AboutPage() {
       <div className="mt-10 flex flex-col gap-3 sm:flex-row">
         <Link
           to="/terms"
-          className="inline-flex justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--text)] transition-colors hover:border-[var(--signal)]/40"
+          className="inline-flex justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--text)] transition-colors hover:border-[var(--signal)] hover:text-[var(--signal)]"
         >
           Terms of Service
         </Link>
         <Link
           to="/privacy"
-          className="inline-flex justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--text)] transition-colors hover:border-[var(--signal)]/40"
+          className="inline-flex justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--text)] transition-colors hover:border-[var(--signal)] hover:text-[var(--signal)]"
         >
           Privacy Policy
         </Link>

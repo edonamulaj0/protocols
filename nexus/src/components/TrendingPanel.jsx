@@ -39,7 +39,7 @@ function TrendingRow({ rank, post, comments }) {
     <li>
       <Link
         to={`/discussion/${post.id}`}
-        className="flex gap-3 rounded-none p-2 transition-colors hover:bg-[var(--ink-800)]/80"
+        className="flex gap-3 rounded-none p-2 transition-colors hover:bg-[var(--surface-hi)]"
       >
         <span className="font-mono w-5 pt-0.5 text-sm text-[var(--signal)]">{rank}</span>
         <div className="min-w-0 flex-1">
@@ -50,7 +50,7 @@ function TrendingRow({ rank, post, comments }) {
             )}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[var(--muted)]">
-            <span className="rounded-none bg-[var(--ink-800)] px-1.5 py-0.5">
+            <span className="rounded-none bg-[var(--surface-hi)] px-1.5 py-0.5">
               {post.subreddit || post.source}
             </span>
             <motion.span key={label}>{label}</motion.span>

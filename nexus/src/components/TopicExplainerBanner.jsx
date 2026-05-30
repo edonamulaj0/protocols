@@ -1,6 +1,6 @@
 export function TopicExplainerBanner() {
   return (
-    <div className="mb-8 border border-[var(--border)] border-l-2 border-l-[var(--signal)] bg-[var(--ink-900)] px-5 py-4">
+    <div className="mb-8 border border-[var(--border)] border-l-2 border-l-[var(--signal)] bg-[var(--surface)] px-5 py-4">
       <p className="font-mono text-[9px] uppercase tracking-[.15em] text-[var(--signal)] mb-1">
         How Polaris works
       </p>

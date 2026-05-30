@@ -30,13 +30,16 @@ export const useDiscussionStore = create((set, get) => ({
   setTab: (tab) => set({ tab }),
 
   hydrateFromFeed: (id) => {
+    const decoded = decodeURIComponent(id)
     const feed = useFeedStore.getState().posts
     const post =
       feed.find((p) => p.id === id) ||
-      feed.find((p) => p.id === decodeURIComponent(id)) ||
-      MOCK_DISCUSSIONS.find((p) => p.id === id)
+      feed.find((p) => p.id === decoded) ||
+      MOCK_DISCUSSIONS.find((p) => p.id === id || p.id === decoded)
     if (!post) return null
-    const existing = get().detailById[post.id]
+
+    const cacheKey = id
+    const existing = get().detailById[cacheKey]
     const saved = loadThread(post.id)
     const keepComments =
       existing?.post?.id === post.id && Array.isArray(existing.comments) && existing.comments.length
@@ -49,7 +52,7 @@ export const useDiscussionStore = create((set, get) => ({
       tab: existing?.post?.id === post.id ? get().tab : 'sides',
       detailById: {
         ...get().detailById,
-        [post.id]: {
+        [cacheKey]: {
           post,
           comments: baseComments,
           sort,
@@ -60,8 +63,15 @@ export const useDiscussionStore = create((set, get) => ({
   },
 
   addComment: (discussionId, { text, stance, username, parentId = null }) => {
-    const row = get().detailById[discussionId]
+    const row =
+      get().detailById[discussionId] ||
+      Object.values(get().detailById).find((r) => r.post?.id === discussionId)
     if (!row) return
+    const cacheKey =
+      get().detailById[discussionId] != null
+        ? discussionId
+        : Object.entries(get().detailById).find(([, r]) => r.post?.id === discussionId)?.[0]
+    if (!cacheKey) return
     const id = `c-${Date.now()}`
     const comment = {
       id,
@@ -83,12 +93,16 @@ export const useDiscussionStore = create((set, get) => ({
       comments = [comment, ...comments]
     }
     const next = { ...row, comments }
-    set({ detailById: { ...get().detailById, [discussionId]: next } })
-    saveThread(discussionId, comments)
+    set({ detailById: { ...get().detailById, [cacheKey]: next } })
+    saveThread(row.post.id, comments)
   },
 
   voteComment: (discussionId, commentId, delta) => {
-    const row = get().detailById[discussionId]
+    const cacheKey =
+      get().detailById[discussionId] != null
+        ? discussionId
+        : Object.entries(get().detailById).find(([, r]) => r.post?.id === discussionId)?.[0]
+    const row = cacheKey ? get().detailById[cacheKey] : null
     if (!row) return
     const bump = (c) => {
       if (c.id === commentId) {
@@ -102,23 +116,29 @@ export const useDiscussionStore = create((set, get) => ({
     }
     const comments = row.comments.map(bump)
     const next = { ...row, comments }
-    set({ detailById: { ...get().detailById, [discussionId]: next } })
-    saveThread(discussionId, comments)
+    set({ detailById: { ...get().detailById, [cacheKey]: next } })
+    saveThread(row.post.id, comments)
   },
 
   setSort: (discussionId, sort) => {
-    const row = get().detailById[discussionId]
+    const cacheKey =
+      get().detailById[discussionId] != null
+        ? discussionId
+        : Object.entries(get().detailById).find(([, r]) => r.post?.id === discussionId)?.[0]
+    const row = cacheKey ? get().detailById[cacheKey] : null
     if (!row) return
     set({
       detailById: {
         ...get().detailById,
-        [discussionId]: { ...row, sort },
+        [cacheKey]: { ...row, sort },
       },
     })
   },
 
   sortedComments: (discussionId) => {
-    const row = get().detailById[discussionId]
+    const row =
+      get().detailById[discussionId] ||
+      Object.values(get().detailById).find((r) => r.post?.id === discussionId)
     if (!row) return []
     const list = [...row.comments]
     if (row.sort === 'new') list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))

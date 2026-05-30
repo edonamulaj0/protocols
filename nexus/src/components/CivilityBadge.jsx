@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 function tone(score) {
   if (score <= 50) return 'text-[var(--signal)] ring-[var(--signal)]/40 bg-[var(--signal-muted)]'
-  return 'text-[var(--ink-300)] ring-[var(--border)] bg-[var(--ink-800)]'
+  return 'text-[var(--muted)] ring-[var(--border)] bg-[var(--surface-hi)]'
 }
 
 export function CivilityBadge({ value, className = '' }) {

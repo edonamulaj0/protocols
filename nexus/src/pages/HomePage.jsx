@@ -28,7 +28,7 @@ export function HomePage() {
 
   if (loading && !posts.length) {
     return (
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-6 sm:gap-8">
         <header className="mb-8 border-b border-[var(--border)] pb-6">
           <div className="flex items-center justify-between mb-3">
             <span className="font-mono text-[9px] uppercase tracking-[.18em] text-[var(--signal)]">
@@ -38,7 +38,7 @@ export function HomePage() {
               {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </span>
           </div>
-          <h1 className="font-display text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
+          <h1 className="font-display text-4xl sm:text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
             Today&apos;s Debates
           </h1>
           <hr className="signal mt-4" />
@@ -64,7 +64,7 @@ export function HomePage() {
             {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
-        <h1 className="font-display text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
+        <h1 className="font-display text-4xl sm:text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
           Today&apos;s Debates
         </h1>
         <hr className="signal mt-4" />

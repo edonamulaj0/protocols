@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { CivilityBadge } from '../components/CivilityBadge'
 import { StanceBar } from '../components/StanceBar'
@@ -21,9 +21,9 @@ const tabs = [
 ]
 
 function stancePill(stance) {
-  if (stance === 'For') return 'bg-emerald-950/70 text-[var(--for)] ring-emerald-500/35'
-  if (stance === 'Against') return 'bg-rose-950/70 text-[var(--against)] ring-rose-500/35'
-  return 'bg-slate-800/80 text-[var(--neutral)] ring-slate-500/30'
+  if (stance === 'For') return 'bg-[var(--stance-for-bg)] text-[var(--stance-for-text)] ring-[var(--stance-for-text)]/35'
+  if (stance === 'Against') return 'bg-[var(--stance-against-bg)] text-[var(--stance-against-text)] ring-[var(--stance-against-text)]/35'
+  return 'bg-[var(--stance-neutral-bg)] text-[var(--stance-neutral-text)] ring-[var(--stance-neutral-text)]/30'
 }
 
 function DiscussionPageInner({ id, preferredStance }) {
@@ -57,12 +57,17 @@ function DiscussionPageInner({ id, preferredStance }) {
   const { scrollY } = useScroll()
   const imgY = useTransform(scrollY, (v) => v * 0.3)
 
-  useEffect(() => {
-    if (!id) return
-    hydrateFromFeed(id)
+  const hydratedPost = useMemo(() => {
+    if (!id) return null
+    return hydrateFromFeed(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-hydrate when feed data arrives
   }, [id, hydrateFromFeed, feedPosts, feedLoading, feedLastRefresh])
 
-  const post = detail?.post
+  useLayoutEffect(() => {
+    if (id) hydrateFromFeed(id)
+  }, [id, hydrateFromFeed, feedPosts, feedLoading, feedLastRefresh])
+
+  const post = detail?.post ?? hydratedPost
   const comments = id ? sortedComments(id) : []
 
   const both = post?.bothSides
@@ -82,11 +87,15 @@ function DiscussionPageInner({ id, preferredStance }) {
   }, [post])
 
   if (!post) {
-    if (feedLoading) {
+    const isHydrating = Boolean(id && !post && (feedLoading || feedPosts.length > 0))
+
+    if (isHydrating || feedLoading) {
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          <div className="h-4 w-32 skeleton-shimmer rounded-none" />
+          <div className="aspect-[21/9] min-h-[160px] w-full skeleton-shimmer rounded-none" />
+          <div className="h-8 w-3/4 skeleton-shimmer rounded-none" />
           <p className="text-sm text-[var(--muted)]">Loading discussion…</p>
-          <div className="h-2 max-w-xs animate-pulse rounded-none bg-[var(--ink-900)]" />
         </div>
       )
     }
@@ -104,7 +113,7 @@ function DiscussionPageInner({ id, preferredStance }) {
     e.preventDefault()
     if (!stance || !draft.trim() || !canComment || !displayName?.trim()) return
     const text = draft.trim().slice(0, 500)
-    addComment(post.id, {
+    addComment(id, {
       text,
       stance,
       username: displayName.trim(),
@@ -157,7 +166,7 @@ function DiscussionPageInner({ id, preferredStance }) {
               className="h-full w-full object-cover"
             />
           </motion.div>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink-950)] via-[var(--ink-950)]/40 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--page)] via-[var(--page)]/40 to-transparent" />
         </div>
       </div>
 
@@ -221,7 +230,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                   variants={bulletContainer}
                   initial="hidden"
                   animate="visible"
-                  className="rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-5"
+                  className="rounded-none border border-[var(--border)] bg-[var(--surface)] p-5"
                 >
                   <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--for)]">
                     Arguments For
@@ -242,7 +251,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                   variants={bulletContainer}
                   initial="hidden"
                   animate="visible"
-                  className="rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-5"
+                  className="rounded-none border border-[var(--border)] bg-[var(--surface)] p-5"
                 >
                   <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--against)]">
                     Arguments Against
@@ -291,10 +300,10 @@ function DiscussionPageInner({ id, preferredStance }) {
                       key={s}
                       type="button"
                       onClick={() => setStance(s)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${
+                      className={`rounded-none px-3 py-1.5 text-xs font-semibold ring-1 ${
                         stance === s
-                          ? 'bg-[var(--signal)] text-[var(--ink-950)] ring-[var(--signal)]'
-                          : 'bg-[var(--ink-900)] text-[var(--muted)] ring-[var(--border)]'
+                          ? 'bg-[var(--signal)] text-[var(--signal-on)] ring-[var(--signal)]'
+                          : 'bg-[var(--surface-hi)] text-[var(--muted)] ring-[var(--border)]'
                       }`}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
@@ -317,14 +326,14 @@ function DiscussionPageInner({ id, preferredStance }) {
                   onChange={(e) => setDraft(e.target.value)}
                   rows={4}
                   placeholder="Add to the thread…"
-                  className="mb-2 w-full resize-y rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-2.5 text-[var(--text)] outline-none focus:border-[var(--signal)]/45"
+                  className="mb-2 w-full resize-y rounded-none border border-[var(--border)] bg-[var(--surface-hi)] px-3 py-2.5 text-[var(--text)] outline-none focus:border-[var(--signal)]/45"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-[var(--muted)]">{draft.length}/500</span>
                   <motion.button
                     type="submit"
                     disabled={!stance || !draft.trim() || !canComment}
-                    className="rounded-none bg-[var(--signal)] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[var(--ink-950)] disabled:opacity-40"
+                    className="rounded-none bg-[var(--signal)] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[var(--signal-on)] disabled:opacity-40"
                     whileHover={{ scale: stance && draft.trim() && canComment ? 1.03 : 1 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -338,8 +347,8 @@ function DiscussionPageInner({ id, preferredStance }) {
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setSort(post.id, s)}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${
+                    onClick={() => setSort(id, s)}
+                    className={`rounded-none px-3 py-1 text-xs font-semibold capitalize ring-1 ${
                       (detail?.sort || 'top') === s
                         ? 'text-[var(--text)] ring-[var(--signal)]'
                         : 'text-[var(--muted)] ring-[var(--border)]'
@@ -360,7 +369,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                       setReplyTo(pid)
                       setStance(stance || 'Neutral')
                     }}
-                    onVote={(cid, d) => handleVote(post.id, cid, d, voteComment, recordVoteGiven)}
+                    onVote={(cid, d) => handleVote(id, cid, d, voteComment, recordVoteGiven)}
                   />
                 ))}
               </ul>
@@ -372,9 +381,9 @@ function DiscussionPageInner({ id, preferredStance }) {
               {sourcesList.map((s, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-3 rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-3"
+                  className="flex items-start gap-3 rounded-none border border-[var(--border)] bg-[var(--surface)] p-3"
                 >
-                  <span className="mt-1 h-8 w-8 shrink-0 rounded-none bg-[var(--ink-800)] text-center text-xs leading-8 text-[var(--muted)]">
+                  <span className="mt-1 h-8 w-8 shrink-0 rounded-none bg-[var(--surface-hi)] text-center text-xs leading-8 text-[var(--muted)]">
                     {(s.domain || 'link').slice(0, 2).toUpperCase()}
                   </span>
                   <div className="min-w-0">
@@ -400,10 +409,10 @@ function DiscussionPageInner({ id, preferredStance }) {
 
 function CommentBlock({ c, depth, onReply, onVote }) {
   return (
-    <li className="rounded-none border border-[var(--border)] bg-[var(--ink-900)]/80 p-4">
+    <li className="rounded-none border border-[var(--border)] bg-[var(--surface)]/80 p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <span className="font-medium text-[var(--text)]">{c.username}</span>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ring-1 ${stancePill(c.stance)}`}>
+        <span className={`rounded-none px-2 py-0.5 text-[10px] font-bold uppercase ring-1 ${stancePill(c.stance)}`}>
           {c.stance}
         </span>
         <span className="ml-auto text-xs text-[var(--muted)]">

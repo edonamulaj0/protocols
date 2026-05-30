@@ -1,8 +1,9 @@
 export function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Terms of Service</h1>
-      <p className="mt-2 text-sm text-[var(--muted)]">Last updated: April 2026 · Polaris MVP (local-only)</p>
+      <h1 className="font-display text-4xl sm:text-5xl uppercase tracking-widest text-[var(--text-hi)]">Terms of Service</h1>
+      <hr className="signal mt-3" />
+      <p className="mt-3 text-sm text-[var(--muted)]">Last updated: April 2026 · Polaris MVP (local-only)</p>
       <div className="mt-8 space-y-4 text-sm leading-relaxed text-[var(--muted)]">
         <p>
           Polaris is provided as-is for personal evaluation. Content from third parties (e.g. Reddit

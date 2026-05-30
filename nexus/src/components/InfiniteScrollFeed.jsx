@@ -34,7 +34,7 @@ export function InfiniteScrollFeed({ posts }) {
   return (
     <div>
       <motion.div
-        className="flex flex-col gap-7"
+        className="flex flex-col gap-6 sm:gap-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"

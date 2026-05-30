@@ -36,7 +36,7 @@ export function AppLayout() {
   const anyOverlay = notifOpen || (menuOpen && !isDesktopNav)
 
   return (
-    <div className="flex min-h-svh flex-col pt-12">
+    <div className="flex min-h-svh flex-col bg-[var(--page)] pt-12">
       <DesktopSidebar onNewDiscussion={() => setModalOpen(true)} />
       <AppNavbar
         onOpenNotifications={() => {
@@ -51,20 +51,20 @@ export function AppLayout() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col md:flex-row md:pl-[60px] xl:pl-[220px]">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           <motion.main
             key={location.pathname}
-            className={`mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-20'} md:pb-10`}
-            initial={{ opacity: 0, y: 16 }}
+            className={`mx-auto w-full max-w-3xl flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-[calc(4rem+env(safe-area-inset-bottom))]'} md:pb-10`}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
           >
             <Outlet />
           </motion.main>
         </AnimatePresence>
 
-        <div className="hidden w-[280px] shrink-0 py-6 pr-4 xl:block">
+        <div className="hidden w-[260px] shrink-0 py-6 pr-4 lg:block xl:w-[280px]">
           <div className="sticky top-16">
             <TrendingPanel />
           </div>
