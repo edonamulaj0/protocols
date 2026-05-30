@@ -77,7 +77,7 @@ export const useNotificationStore = create(
       },
     }),
     {
-      name: 'nexus-notify-v1',
+      name: 'polaris-notify-v1',
       partialize: (s) => ({ items: s.items, initialized: s.initialized }),
     },
   ),

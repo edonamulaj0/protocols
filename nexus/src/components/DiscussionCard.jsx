@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
 import { CivilityBadge } from './CivilityBadge'
 import { StanceBar } from './StanceBar'
+import { VerifiedBadge } from './VerifiedBadge'
 import { useUserStore } from '../stores/userStore'
 
 const cardVariants = {
@@ -39,35 +40,43 @@ export function DiscussionCard({ post }) {
 
   return (
     <motion.div variants={cardVariants} className="h-full">
-      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--navy-900)] shadow-[0_16px_50px_rgba(0,0,0,0.35)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[var(--navy-400)]/45 hover:shadow-[0_22px_60px_rgba(0,0,0,0.45)]">
+      <div className="flex h-full flex-col overflow-hidden rounded-none border border-[var(--border)] border-t-2 border-t-[var(--signal)] bg-[var(--ink-900)] shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-[transform,box-shadow,border-color] duration-300 hover:border-t-[var(--signal)] hover:shadow-[0_8px_32px_rgba(217,48,37,.08)]">
         <Link
           to={`/discussion/${post.id}`}
           state={{ preferredStance: stance }}
           className="group flex min-h-0 flex-1 flex-col outline-none"
         >
-          <div className="flex items-center justify-between gap-2 border-b border-[var(--border)] px-4 py-2.5 text-xs text-[var(--muted)]">
-            <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 font-semibold text-[var(--text)] ring-1 ring-[var(--border)]">
+          <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2.5">
+            {post.category && (
+              <span className="rounded-none bg-[var(--ink-800)] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-[var(--text-hi)] ring-1 ring-[var(--border)]">
+                {post.category}
+              </span>
+            )}
+            {post.verified && <VerifiedBadge />}
+            <span className="font-mono text-[10px] text-[var(--muted)]">
               {post.subreddit || post.source}
             </span>
-            <span>{formatTime(post.createdUtc)}</span>
+            <span className="ml-auto font-mono text-[10px] text-[var(--muted)]">
+              {formatTime(post.createdUtc)}
+            </span>
           </div>
-          <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-[var(--navy-800)]">
+          <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-[var(--ink-800)]">
             <img
-              src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/nexus/960/520'}
+              src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/polaris/960/520'}
               alt=""
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               loading="lazy"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--navy-950)]/90 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink-950)]/90 via-transparent to-transparent" />
           </div>
           <div className="flex flex-1 flex-col p-4">
-            <h3 className="font-heading line-clamp-2 text-xl font-semibold leading-snug text-[var(--text)] group-hover:text-white">
+            <h3 className="font-heading line-clamp-2 text-xl leading-tight text-[var(--text-hi)] group-hover:text-white">
               {post.title}
             </h3>
             <div className="mt-4">
               <StanceBar distribution={dist} commentCount={post.num_comments} />
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
+            <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[10px] text-[var(--muted)]">
               <span>💬 {post.num_comments ?? 0}</span>
               <span>↑ {formatScore(post.score ?? 0)}</span>
               <CivilityBadge value={post.civility ?? 70} />
@@ -78,7 +87,7 @@ export function DiscussionCard({ post }) {
           className="border-t border-[var(--border)] px-4 pb-4 pt-3"
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="mb-2 block text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">
+          <span className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">
             Your stance before opening
           </span>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -91,10 +100,10 @@ export function DiscussionCard({ post }) {
                     e.preventDefault()
                     setStance(s)
                   }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition-colors ${
+                  className={`rounded-none px-3 py-1.5 text-xs font-semibold ring-1 transition-colors ${
                     stance === s
-                      ? 'bg-[var(--accent)] text-[var(--navy-950)] ring-[var(--accent)]'
-                      : 'bg-[var(--navy-800)] text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
+                      ? 'bg-[var(--signal)] text-white ring-[var(--signal)]'
+                      : 'bg-[var(--ink-800)] text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
                   }`}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
@@ -106,9 +115,9 @@ export function DiscussionCard({ post }) {
             <motion.button
               type="button"
               aria-label={liked ? 'Unlike' : 'Like discussion'}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1 transition-colors ${
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-none ring-1 transition-colors ${
                 liked
-                  ? 'text-rose-400 ring-rose-500/40 bg-rose-950/40'
+                  ? 'text-[var(--signal)] ring-[var(--signal)]/40 bg-[var(--signal-muted)]'
                   : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
               }`}
               onClick={(e) => {

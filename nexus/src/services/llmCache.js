@@ -1,4 +1,4 @@
-const PREFIX = 'nexus_llm_'
+const PREFIX = 'polaris_llm_'
 
 export function getCachedAnalysis(postId) {
   try {

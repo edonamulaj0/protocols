@@ -7,15 +7,17 @@ export function TrendingPanel() {
   const posts = useFeedStore((s) => s.posts)
   const trending = useMemo(() => {
     return [...posts]
+      .filter((p) => !p.hidden)
       .sort((a, b) => (b.num_comments || 0) - (a.num_comments || 0))
       .slice(0, 8)
   }, [posts])
 
   return (
-    <aside className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-      <h2 className="font-heading mb-4 text-lg font-semibold text-[var(--text)]">
-        Trending Now <span aria-hidden>🔥</span>
+    <aside className="rounded-none border border-[var(--border)] bg-[var(--surface)] p-4">
+      <h2 className="font-display mb-2 text-sm uppercase tracking-widest text-[var(--text-hi)]">
+        Trending
       </h2>
+      <hr className="signal mb-4" />
       <ol className="space-y-3">
         {trending.map((p, i) => (
           <TrendingRow key={p.id} rank={i + 1} post={p} comments={p.num_comments || 0} />
@@ -37,13 +39,18 @@ function TrendingRow({ rank, post, comments }) {
     <li>
       <Link
         to={`/discussion/${post.id}`}
-        className="flex gap-3 rounded-xl p-2 transition-colors hover:bg-[var(--navy-900)]/80"
+        className="flex gap-3 rounded-none p-2 transition-colors hover:bg-[var(--ink-800)]/80"
       >
-        <span className="font-heading w-5 pt-0.5 text-sm text-[var(--muted)]">{rank}</span>
+        <span className="font-mono w-5 pt-0.5 text-sm text-[var(--signal)]">{rank}</span>
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 text-sm font-medium text-[var(--text)]">{post.title}</p>
+          <p className="line-clamp-2 text-sm font-medium text-[var(--text)]">
+            {post.title}
+            {post.verified && (
+              <span className="ml-1.5 font-mono text-[9px] text-[var(--signal)]">• ✓</span>
+            )}
+          </p>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[var(--muted)]">
-            <span className="rounded bg-[var(--navy-800)] px-1.5 py-0.5">
+            <span className="rounded-none bg-[var(--ink-800)] px-1.5 py-0.5">
               {post.subreddit || post.source}
             </span>
             <motion.span key={label}>{label}</motion.span>

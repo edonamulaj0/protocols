@@ -23,6 +23,8 @@ function localAnalysis(topic, comments) {
       : ['Critics stress unintended consequences and gaps in enforcement design.'],
     common_ground:
       'Participants largely want clearer facts and fair process—even when they disagree on outcomes.',
+    explainer:
+      'This topic draws strong opinions because stakeholders weigh different priorities — evidence, ethics, and practical impact — in conflicting ways.',
     civility_score: roughCivilityFromComments(top.map((c) => ({ body: c.body || c.text }))),
     stance_distribution: dist,
   }
@@ -41,20 +43,36 @@ export async function analyzeDiscussionWithLLM(postId, topic, comments) {
     : 'https://api.anthropic.com/v1/messages'
 
   const payload = {
-    model: 'claude-3-5-haiku-20241022',
+    model: 'claude-sonnet-4-20250514',
     max_tokens: 900,
     messages: [
       {
         role: 'user',
-        content: `You are an impartial analyst. Given these comments about "${topic}", extract and return JSON only (no markdown):
+        content: `You are an impartial analyst writing for an educational civic-intelligence platform.
+The platform's mission is to help people understand polarized debates in technology and science.
+
+Given this discussion titled: "${topic.replace(/"/g,'\\"')}"
+
+Comments sample:
+${bodyText || '(no comments available)'}
+
+Return ONLY valid JSON, no markdown or code fences:
 {
-"for": ["argument 1", "argument 2", "argument 3"],
-"against": ["argument 1", "argument 2", "argument 3"],
-"common_ground": "one sentence",
-"civility_score": 0,
-"stance_distribution": { "for": 0, "against": 0, "neutral": 0 }
-}
-Comments:\n${bodyText || '(no comments)'}`,
+  "for": [
+    "Concise argument supporting the position (1-2 sentences, educational tone)",
+    "Second supporting argument",
+    "Third supporting argument"
+  ],
+  "against": [
+    "Concise argument opposing the position (1-2 sentences, educational tone)",
+    "Second opposing argument",
+    "Third opposing argument"
+  ],
+  "common_ground": "One sentence describing what both sides ultimately agree on or share as a concern.",
+  "explainer": "2-3 sentence plain-language explanation of why this topic is polarized and why it matters.",
+  "civility_score": <integer 0-100, where 100 is perfectly civil>,
+  "stance_distribution": { "for": <integer %>, "against": <integer %>, "neutral": <integer %> }
+}`,
       },
     ],
   }

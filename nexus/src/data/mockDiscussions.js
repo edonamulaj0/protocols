@@ -3,7 +3,7 @@
 export const MOCK_DISCUSSIONS = [
   {
     id: 'mock-1',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/technology',
     category: 'Tech',
     title: 'Should AI be regulated like nuclear technology?',
@@ -36,7 +36,7 @@ export const MOCK_DISCUSSIONS = [
   },
   {
     id: 'mock-2',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/society',
     category: 'Society',
     title: 'Is remote work destroying cities?',
@@ -68,7 +68,7 @@ export const MOCK_DISCUSSIONS = [
   },
   {
     id: 'mock-3',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/politics',
     category: 'Politics',
     title: 'Should social media platforms be liable for content?',
@@ -101,7 +101,7 @@ export const MOCK_DISCUSSIONS = [
   },
   {
     id: 'mock-4',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/politics',
     category: 'Politics',
     title: 'Is universal basic income inevitable?',
@@ -131,7 +131,7 @@ export const MOCK_DISCUSSIONS = [
   },
   {
     id: 'mock-5',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/technology',
     category: 'Tech',
     title: 'Does open source software weaken national security?',
@@ -161,7 +161,7 @@ export const MOCK_DISCUSSIONS = [
   },
   {
     id: 'mock-6',
-    source: 'nexus',
+    source: 'polaris',
     subreddit: 'r/politics',
     category: 'Politics',
     title: 'Should voting be mandatory in democracies?',

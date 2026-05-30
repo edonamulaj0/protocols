@@ -1,15 +1,18 @@
 import { analyzeDiscussionWithLLM } from './anthropic'
+import { fetchGdeltTopics } from './gdelt'
 import { matchNewsForTitle, fetchTopHeadlines } from './news'
 import { fetchPostComments } from './reddit'
 import { searchTweetsForTopic } from './twitter'
 import { distributionFromComments, roughCivilityFromComments } from './sentiment'
+
+export { fetchGdeltTopics }
 
 function subName(subreddit) {
   return (subreddit || '').replace(/^r\//, '')
 }
 
 export async function enrichDiscussion(post, headlines) {
-  if ((post.source === 'nexus' || post.source === 'curated') && post.bothSides?.for?.length) {
+  if ((post.source === 'polaris' || post.source === 'curated') && post.bothSides?.for?.length) {
     return post
   }
   const sub = subName(post.subreddit)
@@ -48,6 +51,7 @@ export async function enrichDiscussion(post, headlines) {
     common_ground: analysis.common_ground || '',
     stance_distribution: analysis.stance_distribution || post.stanceDistribution,
   }
+  post.explainer = analysis.explainer || ''
   if (analysis.stance_distribution) {
     post.stanceDistribution = analysis.stance_distribution
   }

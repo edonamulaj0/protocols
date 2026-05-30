@@ -7,7 +7,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useUserStore } from '../stores/userStore'
 
 const navClass =
-  'rounded-xl px-8 py-4 text-center font-heading text-2xl font-semibold tracking-tight text-[var(--text)] transition-colors hover:text-[var(--accent)]'
+  'rounded-none px-8 py-4 text-center font-heading text-2xl font-semibold tracking-tight text-[var(--text)] transition-colors hover:text-[var(--signal)]'
 
 const bottomIconClass =
   'flex flex-1 flex-col items-center gap-1 py-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]'
@@ -22,7 +22,7 @@ export function MenuPanel({ open, onClose }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[110] flex flex-col bg-[var(--navy-950)] lg:hidden"
+          className="fixed inset-0 z-[110] flex flex-col bg-[var(--ink-950)] md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -38,7 +38,7 @@ export function MenuPanel({ open, onClose }) {
             <motion.button
               type="button"
               onClick={onClose}
-              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-xl text-[var(--text)] transition-colors hover:bg-[var(--navy-900)]"
+              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none text-[var(--text)] transition-colors hover:bg-[var(--ink-900)]"
               aria-label="Close menu"
               whileTap={{ scale: 0.95 }}
             >
@@ -66,7 +66,7 @@ export function MenuPanel({ open, onClose }) {
                   signOut()
                   onClose()
                 }}
-                className="w-full rounded-xl border border-[var(--border)] py-3 text-xs font-semibold uppercase tracking-wide text-[var(--muted)] transition-colors hover:border-rose-500/40 hover:text-rose-200"
+                className="w-full rounded-none border border-[var(--border)] py-3 text-xs font-semibold uppercase tracking-wide text-[var(--muted)] transition-colors hover:border-rose-500/40 hover:text-rose-200"
               >
                 Sign out of Google
               </button>

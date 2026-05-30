@@ -239,7 +239,7 @@ export const useUserStore = create(
       },
     }),
     {
-      name: 'nexus-user-v3',
+      name: 'polaris-user-v1',
       partialize: (s) => ({
         googleSub: s.googleSub,
         email: s.email,

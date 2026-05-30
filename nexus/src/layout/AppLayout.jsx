@@ -22,7 +22,7 @@ export function AppLayout() {
   const prependLocalDiscussion = useFeedStore((s) => s.prependLocalDiscussion)
   const recordPostCreated = useUserStore((s) => s.recordPostCreated)
   const initNotifications = useNotificationStore((s) => s.init)
-  const isDesktopNav = useMediaQuery('(min-width: 1024px)')
+  const isDesktopNav = useMediaQuery('(min-width: 768px)')
 
   useEffect(() => {
     initNotifications()
@@ -36,7 +36,7 @@ export function AppLayout() {
   const anyOverlay = notifOpen || (menuOpen && !isDesktopNav)
 
   return (
-    <div className="flex min-h-svh flex-col pt-14">
+    <div className="flex min-h-svh flex-col pt-12">
       <DesktopSidebar onNewDiscussion={() => setModalOpen(true)} />
       <AppNavbar
         onOpenNotifications={() => {
@@ -50,22 +50,22 @@ export function AppLayout() {
         onNewDiscussion={() => setModalOpen(true)}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col lg:flex-row lg:pl-56">
+      <div className="flex min-w-0 flex-1 flex-col md:flex-row md:pl-[60px] xl:pl-[220px]">
         <AnimatePresence mode="wait">
           <motion.main
             key={location.pathname}
-            className={`mx-auto w-full max-w-[min(40rem,100%)] flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-20'} lg:pb-10`}
-            initial={{ opacity: 0, y: 20 }}
+            className={`mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:px-5 lg:px-8 ${anyOverlay ? '' : 'pb-20'} md:pb-10`}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 14 }}
+            exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             <Outlet />
           </motion.main>
         </AnimatePresence>
 
-        <div className="hidden w-[300px] shrink-0 py-6 pr-4 xl:block">
-          <div className="sticky top-20">
+        <div className="hidden w-[280px] shrink-0 py-6 pr-4 xl:block">
+          <div className="sticky top-16">
             <TrendingPanel />
           </div>
         </div>

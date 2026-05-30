@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { MOCK_DISCUSSIONS } from '../data/mockDiscussions'
 import { useFeedStore } from './feedStore'
 
-const LS_COMMENTS = 'nexus_thread_comments_'
+const LS_COMMENTS = 'polaris_thread_'
 
 function loadThread(id) {
   try {
@@ -139,7 +139,7 @@ function seedComments() {
       id: 'seed-1',
       username: 'thread_bot',
       stance: 'Neutral',
-      text: 'Opening balance: read sources before replying. Nexus is a client-only MVP.',
+      text: 'Opening balance: read sources before replying. Polaris is a client-only MVP.',
       upvotes: 12,
       downvotes: 0,
       createdAt: Date.now() - 3600000,

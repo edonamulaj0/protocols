@@ -36,7 +36,7 @@ const defaultStats = {
 function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
   const [dobEdit, setDobEdit] = useState(birthDate || '')
   return (
-    <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+    <section className="mt-8 rounded-none border border-[var(--border)] bg-[var(--surface)] p-4">
       <h2 className="font-heading text-sm font-semibold text-[var(--text)]">Update birthday</h2>
       <p className="mt-1 text-xs text-[var(--muted)]">
         Stored only on this device. Kept when you sign out of Google until you clear site data.
@@ -50,14 +50,14 @@ function ProfileBirthdayEditor({ birthDate, dobMin, dobMax, setBirthDate }) {
             max={dobMax}
             value={dobEdit}
             onChange={(e) => setDobEdit(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--navy-400)]/45"
+            className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--signal)]/45"
           />
         </div>
         <button
           type="button"
           disabled={!dobEdit || dobEdit < dobMin || dobEdit > dobMax}
           onClick={() => setBirthDate(dobEdit)}
-          className="rounded-xl bg-[var(--accent)] px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[var(--navy-950)] disabled:opacity-40"
+          className="rounded-none bg-[var(--signal)] px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[var(--ink-950)] disabled:opacity-40"
         >
           Save birthday
         </button>
@@ -154,13 +154,13 @@ export function ProfilePage() {
         <h1 className="mt-1 font-heading text-3xl font-semibold text-[var(--text)]">{displayName}</h1>
         {!isOwn && (
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Device-local MVP—only <Link to="/profile/me" className="text-[var(--navy-400)] hover:underline">/profile/me</Link> shows your data.
+            Device-local MVP—only <Link to="/profile/me" className="text-[var(--signal)] hover:underline">/profile/me</Link> shows your data.
           </p>
         )}
       </header>
 
       {isOwn && (
-        <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2">
+        <section className="mt-8 rounded-none border border-[var(--border)] bg-[var(--surface)] px-4 py-2">
           <h2 className="border-b border-[var(--border)] py-3 font-heading text-sm font-semibold text-[var(--text)]">
             Name & birthday
           </h2>
@@ -186,9 +186,9 @@ export function ProfilePage() {
             {activityFeed.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-sm"
+                className="flex flex-wrap items-baseline justify-between gap-2 rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-2.5 text-sm"
               >
-                <span className="font-medium capitalize text-[var(--navy-400)]">{a.type}</span>
+                <span className="font-medium capitalize text-[var(--signal)]">{a.type}</span>
                 <span className="min-w-0 flex-1 text-[var(--text)]">{a.title || '—'}</span>
                 <span className="text-xs text-[var(--muted)]">{new Date(a.at).toLocaleString()}</span>
               </li>
@@ -214,9 +214,9 @@ export function ProfilePage() {
             {statTiles.map((t) => (
               <div
                 key={t.label}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-4 text-center"
+                className="rounded-none border border-[var(--border)] bg-[var(--surface)] px-3 py-4 text-center"
               >
-                <p className="font-heading text-2xl font-semibold text-[var(--accent)]">{t.value}</p>
+                <p className="font-heading text-2xl font-semibold text-[var(--signal)]">{t.value}</p>
                 <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">
                   {t.label}
                 </p>
@@ -237,9 +237,9 @@ export function ProfilePage() {
                   <span>{c}</span>
                   <span>{categoryEngagement[c] || 0}</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[var(--navy-900)] ring-1 ring-[var(--border)]">
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--ink-900)] ring-1 ring-[var(--border)]">
                   <motion.div
-                    className="h-full rounded-full bg-[var(--navy-400)]"
+                    className="h-full rounded-full bg-[var(--signal)]"
                     initial={{ width: 0 }}
                     animate={{
                       width: `${((categoryEngagement[c] || 0) / maxCat) * 100}%`,
@@ -265,7 +265,7 @@ export function ProfilePage() {
             <li key={`${h.discussionId}-${h.at}`}>
               <Link
                 to={`/discussion/${h.discussionId}`}
-                className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2 text-sm transition-colors hover:border-[var(--navy-400)]/35"
+                className="flex flex-wrap items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-2 text-sm transition-colors hover:border-[var(--signal)]/35"
               >
                 <span className="min-w-0 flex-1 font-medium text-[var(--text)]">{h.title}</span>
                 <span

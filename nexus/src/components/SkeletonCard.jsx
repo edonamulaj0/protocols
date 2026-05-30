@@ -1,6 +1,6 @@
 export function SkeletonCard() {
   return (
-    <article className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--navy-900)]">
+    <article className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--ink-900)]">
       <div className="skeleton-shimmer h-48 w-full" />
       <div className="space-y-3 p-4">
         <div className="skeleton-shimmer h-3 w-1/3 rounded" />

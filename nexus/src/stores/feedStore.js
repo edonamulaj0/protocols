@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { MOCK_DISCUSSIONS } from '../data/mockDiscussions'
-import { enrichDiscussion, loadHeadlinesOnce } from '../services/pipeline'
+import { enrichDiscussion, loadHeadlinesOnce, fetchGdeltTopics } from '../services/pipeline'
 import { fetchInitialMultiSub, fetchSubredditHot, normalizePost } from '../services/reddit'
 import { loadCuratedDiscussions } from '../services/staticFeed'
 
@@ -19,12 +19,18 @@ export const useFeedStore = create((set, get) => ({
 
   setPosts: (posts) => set({ posts }),
 
+  updatePost: (id, patch) => {
+    set({
+      posts: get().posts.map(p => p.id === id ? { ...p, ...patch } : p)
+    })
+  },
+
   prependLocalDiscussion: (data) => {
     const id = `local-${Date.now()}`
     const post = {
       id,
-      source: 'nexus',
-      subreddit: 'r/nexus',
+      source: 'polaris',
+      subreddit: 'r/polaris',
       category: data.category,
       title: data.title,
       url: '#',
@@ -49,12 +55,13 @@ export const useFeedStore = create((set, get) => ({
       },
       sources: [
         {
-          type: 'nexus',
+          type: 'polaris',
           title: 'Locally authored topic',
           url: '#',
-          domain: 'nexus.local',
+          domain: 'polaris.local',
         },
       ],
+      verified: false,
       redditComments: [],
       tweets: [],
     }
@@ -88,6 +95,14 @@ export const useFeedStore = create((set, get) => ({
         posts = await fetchInitialMultiSub({ perSub: 6 })
       } catch (e) {
         set({ error: String(e?.message || e) })
+      }
+      if (posts.length < 6) {
+        try {
+          const gdelt = await fetchGdeltTopics({ limit: 12 })
+          posts = [...posts, ...gdelt]
+        } catch {
+          // ignore
+        }
       }
       if (!posts.length) {
         set({
@@ -162,7 +177,7 @@ export const useFeedStore = create((set, get) => ({
   loadMore: async () => {
     const { loadingMore, hasMore, posts, afterBySub } = get()
     if (loadingMore || !hasMore) return
-    if (posts[0]?.source === 'nexus' || posts[0]?.source === 'curated') {
+    if (posts[0]?.source === 'polaris' || posts[0]?.source === 'curated') {
       set({ hasMore: false })
       return
     }

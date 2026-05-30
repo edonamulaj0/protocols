@@ -29,8 +29,9 @@ export function ExplorePage() {
   }, [posts])
 
   const filtered = useMemo(() => {
-    if (cat === 'All') return posts
-    return posts.filter((p) => (p.category || 'Society') === cat)
+    const visible = posts.filter((p) => !p.hidden)
+    if (cat === 'All') return visible
+    return visible.filter((p) => (p.category || 'Society') === cat)
   }, [posts, cat])
 
   const displayPosts = useMemo(
@@ -51,7 +52,7 @@ export function ExplorePage() {
           <h2 className="font-heading text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
             Categories
           </h2>
-          <ul className="mt-3 flex flex-col gap-1 border border-[var(--border)] rounded-2xl bg-[var(--surface)]/40 p-1.5">
+          <ul className="mt-3 flex flex-col gap-1 border border-[var(--border)] rounded-none bg-[var(--surface)]/40 p-1.5">
             {EXPLORE_CATEGORIES.map((label) => {
               const count = categoryCounts[label] ?? 0
               const active = cat === label
@@ -60,16 +61,16 @@ export function ExplorePage() {
                   <button
                     type="button"
                     onClick={() => setCat(label)}
-                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
+                    className={`flex w-full items-center justify-between gap-3 rounded-none px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                       active
-                        ? 'bg-[var(--navy-700)] text-[var(--text)] ring-1 ring-[var(--navy-400)]/35'
-                        : 'text-[var(--muted)] hover:bg-[var(--navy-900)] hover:text-[var(--text)]'
+                        ? 'bg-[var(--ink-700)] text-[var(--text)] ring-1 ring-[var(--signal)]/35'
+                        : 'text-[var(--muted)] hover:bg-[var(--ink-900)] hover:text-[var(--text)]'
                     }`}
                   >
                     <span>{label}</span>
                     <span
                       className={`tabular-nums text-xs font-bold ${
-                        active ? 'text-[var(--accent)]' : 'text-[var(--muted)]'
+                        active ? 'text-[var(--signal)]' : 'text-[var(--muted)]'
                       }`}
                     >
                       {count}

@@ -2,16 +2,23 @@ import { Link } from 'react-router-dom'
 
 export function LogoMark({ className = '' }) {
   return (
-    <Link to="/" className={`flex items-baseline font-heading ${className}`}>
-      <span className="text-xl font-semibold tracking-[0.14em] text-[var(--text)] sm:text-2xl">NE</span>
-      <span className="relative inline-block text-xl font-semibold tracking-[0.14em] text-[var(--text)] sm:text-2xl">
-        X
-        <span
-          className="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)] shadow-[0_0_12px_rgba(232,200,74,0.75)]"
-          aria-hidden
-        />
+    <Link to="/" className={`inline-flex items-center gap-2 select-none ${className}`}>
+      {/* North-star glyph */}
+      <span
+        className="flex h-7 w-7 items-center justify-center rounded-sm bg-[var(--signal)] shrink-0"
+        aria-hidden
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Four-pointed star / compass rose */}
+          <path d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5L8 0Z" fill="white"/>
+        </svg>
       </span>
-      <span className="text-xl font-semibold tracking-[0.14em] text-[var(--text)] sm:text-2xl">US</span>
+      <span
+        className="font-display text-xl tracking-widest text-[var(--text-hi)] uppercase leading-none"
+        style={{ letterSpacing: '0.18em' }}
+      >
+        POLARIS
+      </span>
     </Link>
   )
 }

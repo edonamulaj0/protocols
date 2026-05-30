@@ -3,6 +3,7 @@ import { useFeedStore } from '../stores/feedStore'
 import { InfiniteScrollFeed } from '../components/InfiniteScrollFeed'
 import { SkeletonCard } from '../components/SkeletonCard'
 import { FeedSortControls } from '../components/FeedSortControls'
+import { TopicExplainerBanner } from '../components/TopicExplainerBanner'
 import { orderPostsForDisplay } from '../lib/feedOrdering'
 
 export function HomePage() {
@@ -10,19 +11,39 @@ export function HomePage() {
   const posts = useFeedStore((s) => s.posts)
   const [sort, setSort] = useState('relevance')
 
+  const visiblePosts = useMemo(
+    () => posts.filter((p) => !p.hidden),
+    [posts],
+  )
+
   const displayPosts = useMemo(
-    () => orderPostsForDisplay(posts, sort, posts),
-    [posts, sort],
+    () => orderPostsForDisplay(visiblePosts, sort, visiblePosts),
+    [visiblePosts, sort],
+  )
+
+  const hasGdelt = useMemo(
+    () => visiblePosts.some((p) => p.source === 'gdelt'),
+    [visiblePosts],
   )
 
   if (loading && !posts.length) {
     return (
       <div className="flex flex-col gap-7">
-        <header className="mb-2">
-          <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Today&apos;s debates</h1>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            Pulling live threads from Reddit, cross-checking headlines, and summarizing both
-            sides—stay skeptical, stay kind.
+        <header className="mb-8 border-b border-[var(--border)] pb-6">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-mono text-[9px] uppercase tracking-[.18em] text-[var(--signal)]">
+              Daily Intelligence Brief
+            </span>
+            <span className="font-mono text-[9px] text-[var(--muted)] uppercase tracking-wide">
+              {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </span>
+          </div>
+          <h1 className="font-display text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
+            Today&apos;s Debates
+          </h1>
+          <hr className="signal mt-4" />
+          <p className="mt-3 text-sm text-[var(--muted)] font-body">
+            AI-gathered discussions on technology & science — both sides explained, human-verified.
           </p>
         </header>
         <SkeletonCard />
@@ -34,13 +55,24 @@ export function HomePage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="font-heading text-3xl font-semibold text-[var(--text)]">Today&apos;s debates</h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Substack-style cards on a calmer canvas. Data may fall back to curated mocks when APIs
-          block the browser.
+      <header className="mb-8 border-b border-[var(--border)] pb-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="font-mono text-[9px] uppercase tracking-[.18em] text-[var(--signal)]">
+            Daily Intelligence Brief
+          </span>
+          <span className="font-mono text-[9px] text-[var(--muted)] uppercase tracking-wide">
+            {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </span>
+        </div>
+        <h1 className="font-display text-5xl uppercase tracking-widest text-[var(--text-hi)] leading-none">
+          Today&apos;s Debates
+        </h1>
+        <hr className="signal mt-4" />
+        <p className="mt-3 text-sm text-[var(--muted)] font-body">
+          AI-gathered discussions on technology & science — both sides explained, human-verified.
         </p>
       </header>
+      {hasGdelt && <TopicExplainerBanner />}
       <FeedSortControls value={sort} onChange={setSort} className="mb-6" />
       <InfiniteScrollFeed posts={displayPosts} />
     </div>

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { CivilityBadge } from '../components/CivilityBadge'
 import { StanceBar } from '../components/StanceBar'
+import { VerifiedBadge } from '../components/VerifiedBadge'
 import { useDiscussionStore } from '../stores/discussionStore'
 import { useFeedStore } from '../stores/feedStore'
 import { useNotificationStore } from '../stores/notificationStore'
@@ -85,14 +86,14 @@ function DiscussionPageInner({ id, preferredStance }) {
       return (
         <div className="space-y-3">
           <p className="text-sm text-[var(--muted)]">Loading discussion…</p>
-          <div className="h-2 max-w-xs animate-pulse rounded-full bg-[var(--navy-900)]" />
+          <div className="h-2 max-w-xs animate-pulse rounded-none bg-[var(--ink-900)]" />
         </div>
       )
     }
     return (
       <p className="text-[var(--muted)]">
         Discussion not found.{' '}
-        <Link to="/" className="text-[var(--navy-400)]">
+        <Link to="/" className="text-[var(--signal)]">
           Back home
         </Link>
       </p>
@@ -147,24 +148,25 @@ function DiscussionPageInner({ id, preferredStance }) {
         ← Back to feed
       </Link>
 
-      <div className="relative -mx-4 mb-8 overflow-hidden rounded-2xl lg:mx-0">
-        <div className="relative aspect-[21/9] min-h-[200px] w-full">
+      <div className="relative -mx-4 mb-8 overflow-hidden rounded-none lg:mx-0">
+        <div className="relative aspect-[21/9] min-h-[160px] w-full">
           <motion.div className="absolute inset-0 scale-110" style={{ y: imgY }}>
             <img
-              src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/nexus/1200/520'}
+              src={post.imageUrl || post.thumbnail || 'https://picsum.photos/seed/polaris/1200/520'}
               alt=""
               className="h-full w-full object-cover"
             />
           </motion.div>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--navy-950)] via-[var(--navy-950)]/40 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink-950)] via-[var(--ink-950)]/40 to-transparent" />
         </div>
       </div>
 
       <header className="mb-6">
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
-          <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 font-semibold text-[var(--text)] ring-1 ring-[var(--border)]">
+          <span className="rounded-none bg-[var(--surface)] px-2 py-0.5 font-mono text-[10px] font-semibold text-[var(--text)] ring-1 ring-[var(--border)]">
             {post.subreddit}
           </span>
+          {post.verified && <VerifiedBadge />}
           <CivilityBadge value={post.civility ?? 70} />
         </div>
         <h1 className="font-heading text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl">
@@ -189,7 +191,7 @@ function DiscussionPageInner({ id, preferredStance }) {
             {tab === t.id && (
               <motion.span
                 layoutId={`d-tab-${id}`}
-                className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[var(--accent)]"
+                className="absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--signal)]"
               />
             )}
           </button>
@@ -206,15 +208,23 @@ function DiscussionPageInner({ id, preferredStance }) {
         >
           {tab === 'sides' && both && (
             <div>
+              {post.explainer && (
+                <div className="mb-6 border-l-2 border-[var(--signal)] pl-4">
+                  <p className="font-mono text-[9px] uppercase tracking-widest text-[var(--signal)] mb-1">
+                    Why this is polarized
+                  </p>
+                  <p className="text-sm text-[var(--muted)] leading-relaxed">{post.explainer}</p>
+                </div>
+              )}
               <div className="grid gap-6 md:grid-cols-2">
                 <motion.div
                   variants={bulletContainer}
                   initial="hidden"
                   animate="visible"
-                  className="rounded-2xl border border-[var(--border)] bg-[var(--navy-900)] p-5"
+                  className="rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-5"
                 >
-                  <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-[var(--for)]">
-                    🟢 Arguments For
+                  <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--for)]">
+                    Arguments For
                   </h2>
                   <ul className="space-y-2">
                     {(both.for || []).map((line, i) => (
@@ -232,10 +242,10 @@ function DiscussionPageInner({ id, preferredStance }) {
                   variants={bulletContainer}
                   initial="hidden"
                   animate="visible"
-                  className="rounded-2xl border border-[var(--border)] bg-[var(--navy-900)] p-5"
+                  className="rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-5"
                 >
-                  <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-[var(--against)]">
-                    🔴 Arguments Against
+                  <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-wide text-[var(--against)]">
+                    Arguments Against
                   </h2>
                   <ul className="space-y-2">
                     {(both.against || []).map((line, i) => (
@@ -251,7 +261,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                 </motion.div>
               </div>
               {both.common_ground && (
-                <p className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-center text-sm italic text-[var(--neutral)]">
+                <p className="mt-6 rounded-none border border-[var(--border)] border-l-2 border-l-[var(--signal)] bg-[var(--surface)] px-4 py-3 text-center text-sm italic text-[var(--neutral)]">
                   {both.common_ground}
                 </p>
               )}
@@ -267,11 +277,11 @@ function DiscussionPageInner({ id, preferredStance }) {
           {tab === 'comments' && (
             <div>
               {!canComment && (
-                <p className="mb-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--muted)]">
+                <p className="mb-4 rounded-none border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--muted)]">
                   Sign in with Google and save your birthday from the prompt to comment (birthday stays on this device).
                 </p>
               )}
-              <form onSubmit={onSubmitComment} className="mb-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <form onSubmit={onSubmitComment} className="mb-8 rounded-none border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
                   Stance (required)
                 </p>
@@ -283,8 +293,8 @@ function DiscussionPageInner({ id, preferredStance }) {
                       onClick={() => setStance(s)}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${
                         stance === s
-                          ? 'bg-[var(--accent)] text-[var(--navy-950)] ring-[var(--accent)]'
-                          : 'bg-[var(--navy-900)] text-[var(--muted)] ring-[var(--border)]'
+                          ? 'bg-[var(--signal)] text-[var(--ink-950)] ring-[var(--signal)]'
+                          : 'bg-[var(--ink-900)] text-[var(--muted)] ring-[var(--border)]'
                       }`}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
@@ -294,7 +304,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                   ))}
                 </div>
                 {replyTo && (
-                  <p className="mb-2 text-xs text-[var(--navy-400)]">
+                  <p className="mb-2 text-xs text-[var(--signal)]">
                     Replying to comment —{' '}
                     <button type="button" className="underline" onClick={() => setReplyTo(null)}>
                       cancel
@@ -307,14 +317,14 @@ function DiscussionPageInner({ id, preferredStance }) {
                   onChange={(e) => setDraft(e.target.value)}
                   rows={4}
                   placeholder="Add to the thread…"
-                  className="mb-2 w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-2.5 text-[var(--text)] outline-none focus:border-[var(--navy-400)]/45"
+                  className="mb-2 w-full resize-y rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-2.5 text-[var(--text)] outline-none focus:border-[var(--signal)]/45"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-[var(--muted)]">{draft.length}/500</span>
                   <motion.button
                     type="submit"
                     disabled={!stance || !draft.trim() || !canComment}
-                    className="rounded-lg bg-[var(--accent)] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[var(--navy-950)] disabled:opacity-40"
+                    className="rounded-none bg-[var(--signal)] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[var(--ink-950)] disabled:opacity-40"
                     whileHover={{ scale: stance && draft.trim() && canComment ? 1.03 : 1 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -331,7 +341,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                     onClick={() => setSort(post.id, s)}
                     className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${
                       (detail?.sort || 'top') === s
-                        ? 'text-[var(--text)] ring-[var(--navy-400)]'
+                        ? 'text-[var(--text)] ring-[var(--signal)]'
                         : 'text-[var(--muted)] ring-[var(--border)]'
                     }`}
                   >
@@ -362,9 +372,9 @@ function DiscussionPageInner({ id, preferredStance }) {
               {sourcesList.map((s, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--navy-900)] p-3"
+                  className="flex items-start gap-3 rounded-none border border-[var(--border)] bg-[var(--ink-900)] p-3"
                 >
-                  <span className="mt-1 h-8 w-8 shrink-0 rounded-lg bg-[var(--navy-800)] text-center text-xs leading-8 text-[var(--muted)]">
+                  <span className="mt-1 h-8 w-8 shrink-0 rounded-none bg-[var(--ink-800)] text-center text-xs leading-8 text-[var(--muted)]">
                     {(s.domain || 'link').slice(0, 2).toUpperCase()}
                   </span>
                   <div className="min-w-0">
@@ -372,7 +382,7 @@ function DiscussionPageInner({ id, preferredStance }) {
                       href={s.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-medium text-[var(--navy-400)] hover:underline"
+                      className="font-medium text-[var(--signal)] hover:underline"
                     >
                       {s.title}
                     </a>
@@ -390,7 +400,7 @@ function DiscussionPageInner({ id, preferredStance }) {
 
 function CommentBlock({ c, depth, onReply, onVote }) {
   return (
-    <li className="rounded-xl border border-[var(--border)] bg-[var(--navy-900)]/80 p-4">
+    <li className="rounded-none border border-[var(--border)] bg-[var(--ink-900)]/80 p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <span className="font-medium text-[var(--text)]">{c.username}</span>
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ring-1 ${stancePill(c.stance)}`}>
@@ -409,7 +419,7 @@ function CommentBlock({ c, depth, onReply, onVote }) {
           ↓ {c.downvotes || 0}
         </button>
         {depth === 0 && (
-          <button type="button" className="text-[var(--navy-400)] hover:underline" onClick={() => onReply(c.id)}>
+          <button type="button" className="text-[var(--signal)] hover:underline" onClick={() => onReply(c.id)}>
             Reply
           </button>
         )}

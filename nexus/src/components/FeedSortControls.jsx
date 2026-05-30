@@ -18,7 +18,7 @@ export function FeedSortControls({ value, onChange, className = '' }) {
           onClick={() => onChange(o.value)}
           className={`rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors ${
             value === o.value
-              ? 'bg-[var(--navy-700)] text-[var(--text)] ring-[var(--navy-400)]/40'
+              ? 'bg-[var(--ink-700)] text-[var(--text)] ring-[var(--signal)]/40'
               : 'text-[var(--muted)] ring-[var(--border)] hover:text-[var(--text)]'
           }`}
         >

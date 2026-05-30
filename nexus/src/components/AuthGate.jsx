@@ -61,7 +61,7 @@ export function AuthGate() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
+              className="w-full max-w-md rounded-none border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               role="alert"
@@ -70,10 +70,10 @@ export function AuthGate() {
                 Google Sign-In not configured
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
-                Add <code className="rounded bg-[var(--navy-900)] px-1.5 py-0.5 text-[var(--text)]">VITE_GOOGLE_CLIENT_ID</code> to{' '}
-                <code className="rounded bg-[var(--navy-900)] px-1.5 py-0.5 text-[var(--text)]">.env</code> (OAuth 2.0 Web client from Google
+                Add <code className="rounded bg-[var(--ink-900)] px-1.5 py-0.5 text-[var(--text)]">VITE_GOOGLE_CLIENT_ID</code> to{' '}
+                <code className="rounded bg-[var(--ink-900)] px-1.5 py-0.5 text-[var(--text)]">.env</code> (OAuth 2.0 Web client from Google
                 Cloud Console) and restart the dev server. Authorized JavaScript origins should include your app origin (e.g.{' '}
-                <code className="rounded bg-[var(--navy-900)] px-1.5 py-0.5">http://localhost:5173</code>).
+                <code className="rounded bg-[var(--ink-900)] px-1.5 py-0.5">http://localhost:5173</code>).
               </p>
             </motion.div>
           </motion.div>
@@ -89,7 +89,7 @@ export function AuthGate() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
+              className="w-full max-w-md rounded-none border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 280, damping: 26 }}
@@ -98,7 +98,7 @@ export function AuthGate() {
               aria-labelledby="auth-gate-title"
             >
               <h2 id="auth-gate-title" className="font-heading text-2xl font-semibold text-[var(--text)]">
-                Sign in to Nexus
+                Sign in to Polaris
               </h2>
               <p className="mt-2 text-sm text-[var(--muted)]">
                 Use Google to continue. We read your name and email from the sign-in token and keep them only in this browser. Google’s default
@@ -138,7 +138,7 @@ export function AuthGate() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
+              className="w-full max-w-md rounded-none border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               role="dialog"
@@ -161,12 +161,12 @@ export function AuthGate() {
                 max={dobMax}
                 value={dobDraft}
                 onChange={(e) => setDobDraft(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--navy-900)] px-3 py-3 text-[var(--text)] outline-none focus:border-[var(--navy-400)]/45"
+                className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--ink-900)] px-3 py-3 text-[var(--text)] outline-none focus:border-[var(--signal)]/45"
               />
               <motion.button
                 type="button"
                 disabled={!dobOk}
-                className="accent-glow-hover mt-5 w-full rounded-xl bg-[var(--accent)] py-3 text-sm font-bold uppercase tracking-wide text-[var(--navy-950)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="signal-glow-hover mt-5 w-full rounded-none bg-[var(--signal)] py-3 text-sm font-bold uppercase tracking-wide text-[var(--ink-950)] disabled:cursor-not-allowed disabled:opacity-40"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {

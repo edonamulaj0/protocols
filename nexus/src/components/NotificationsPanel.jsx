@@ -34,8 +34,8 @@ export function NotificationsPanel({ open, onClose }) {
             key="notif-panel"
             className={
               isDesktop
-                ? 'fixed right-4 top-14 z-[110] flex max-h-[min(32rem,75vh)] w-[min(20rem,calc(100vw-15rem))] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--navy-950)] shadow-2xl lg:right-8 lg:top-16'
-                : 'fixed inset-0 z-[110] flex flex-col bg-[var(--navy-950)]'
+                ? 'fixed right-4 top-14 z-[110] flex max-h-[min(32rem,75vh)] w-[min(20rem,calc(100vw-15rem))] flex-col overflow-hidden rounded-none border border-[var(--border)] bg-[var(--ink-950)] shadow-2xl lg:right-8 lg:top-16'
+                : 'fixed inset-0 z-[110] flex flex-col bg-[var(--ink-950)]'
             }
             initial={
               isDesktop ? { opacity: 0, scale: 0.96, y: -6 } : { opacity: 0 }
@@ -54,7 +54,7 @@ export function NotificationsPanel({ open, onClose }) {
               <motion.button
                 type="button"
                 onClick={onClose}
-                className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-[var(--text)] transition-colors hover:bg-[var(--navy-900)]"
+                className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-none text-[var(--text)] transition-colors hover:bg-[var(--ink-900)]"
                 aria-label="Close notifications"
                 whileTap={{ scale: 0.95 }}
               >
@@ -65,7 +65,7 @@ export function NotificationsPanel({ open, onClose }) {
               <button
                 type="button"
                 onClick={() => markAllRead()}
-                className="text-xs font-semibold text-[var(--navy-400)] hover:underline sm:text-sm"
+                className="text-xs font-semibold text-[var(--signal)] hover:underline sm:text-sm"
               >
                 Mark all as read
               </button>
@@ -80,7 +80,7 @@ export function NotificationsPanel({ open, onClose }) {
                       onClose()
                       navigate(`/discussion/${n.discussionId}`)
                     }}
-                    className="flex w-full gap-2 rounded-xl border border-transparent p-3 text-left transition-colors hover:border-[var(--border)] hover:bg-[var(--surface)] sm:gap-3 sm:p-4"
+                    className="flex w-full gap-2 rounded-none border border-transparent p-3 text-left transition-colors hover:border-[var(--border)] hover:bg-[var(--surface)] sm:gap-3 sm:p-4"
                   >
                     <span className="text-xl sm:text-2xl" aria-hidden>
                       {n.icon}
@@ -93,7 +93,7 @@ export function NotificationsPanel({ open, onClose }) {
                       </p>
                     </div>
                     {!n.read && (
-                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--navy-400)] sm:mt-2 sm:h-2.5 sm:w-2.5" />
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--signal)] sm:mt-2 sm:h-2.5 sm:w-2.5" />
                     )}
                   </button>
                 </li>
